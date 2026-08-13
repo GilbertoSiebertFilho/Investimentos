@@ -103,10 +103,25 @@ def main():
     src = TEMPLATE.read_text(encoding="utf-8")
 
     # -------- conteúdo estático (aparece mesmo sem JavaScript) --------
+    # Regra 4 do CLAUDE.md: o que o renderPlate() escreve em JS precisa existir
+    # aqui também, senão o site publicado e a pré-visualização do app Arquivos do
+    # iOS (que não roda script) mostram o total em reais ao lado de "US$ —".
+    def total_usd(k):
+        u = months[k]["fx"].get("usd") or 0
+        return total(k) / u if u > 0 else None
+
     ult = ks[-1]
     t = total(ult)
+    tu = total_usd(ult)
+    fxu = months[ult]["fx"].get("usd") or 0
     src = src.replace('<p class="total" id="totalNow"><span class="cifra">R$</span>—</p>',
         f'<p class="total" id="totalNow"><span class="cifra">R$</span>{nf(t)}</p>')
+    src = src.replace('<p class="total sec" id="totalUsd"><span class="cifra">US$</span>—</p>',
+        f'<p class="total sec" id="totalUsd"><span class="cifra">US$</span>{nf(tu) if tu is not None else "—"}</p>')
+    src = src.replace('<span class="cot" id="capUsd"></span>',
+        '<span class="cot" id="capUsd">'
+        + (f'US$ 1 = R$ {nf(fxu,4)}' if tu is not None else 'sem câmbio')
+        + '</span>')
     src = src.replace('<span id="mesRef" class="muted">sem lançamentos</span>',
         f'<span id="mesRef" class="muted">{rotulo(ult)}</span>')
     if len(ks) > 1:
@@ -116,10 +131,36 @@ def main():
         classe = "up" if d > 0 else "down" if d < 0 else "flat"
         src = src.replace('<span id="deltaMes" class="delta flat"></span>',
             f'<span id="deltaMes" class="delta {classe}">{sinal}R$ {nf(abs(d))}  ({sinal}{nf(abs(p))}%) vs {rotulo(ant)}</span>')
-        pa = (t/total(ks[0]) - 1) * 100
-        sa = "+" if pa >= 0 else "−"
-        src = src.replace('<span id="deltaAcum" class="muted"></span>',
-            f'<span id="deltaAcum" class="muted">acumulado desde {rotulo(ks[0])}: {sa}{nf(abs(pa))}%</span>')
+        # Com um unico lancamento anterior o acumulado E' a variacao do periodo;
+        # repetir o mesmo numero custa uma linha inteira do cabecalho no celular.
+        # Mesma regra do renderPlate() -- os dois caminhos precisam concordar.
+        if len(ks) > 2:
+            pa = (t/total(ks[0]) - 1) * 100
+            sa = "+" if pa >= 0 else "−"
+            src = src.replace('<span id="deltaAcum" class="muted"></span>',
+                f'<span id="deltaAcum" class="muted">acumulado desde {rotulo(ks[0])}: R$ {sa}{nf(abs(pa))}%</span>')
+
+        tu_ant, tu_ini = total_usd(ant), total_usd(ks[0])
+        if tu is not None and tu_ant:
+            du = tu - tu_ant; pu = (tu/tu_ant - 1) * 100
+            su = "+" if du >= 0 else "−"
+            cu = "up" if du > 0 else "down" if du < 0 else "flat"
+            src = src.replace('<span id="deltaMesUsd" class="delta flat"></span>',
+                f'<span id="deltaMesUsd" class="delta {cu}">{su}US$ {nf(abs(du))}  ({su}{nf(abs(pu))}%) vs {rotulo(ant)}</span>')
+            if tu_ini and len(ks) > 2:
+                pau = (tu/tu_ini - 1) * 100
+                sau = "+" if pau >= 0 else "−"
+                src = src.replace('<span id="deltaAcumUsd" class="muted"></span>',
+                    f'<span id="deltaAcumUsd" class="muted">US$ {sau}{nf(abs(pau))}%</span>')
+            fx0 = months[ant]["fx"].get("usd") or 0
+            if fx0 > 0 and abs(pu - p) >= 0.05:
+                dif = pu - p
+                pfx = (fxu/fx0 - 1) * 100
+                spfx = "+" if pfx > 0 else "−" if pfx < 0 else ""
+                src = src.replace('<p class="duo-nota" id="duoNota"></p>',
+                    f'<p class="duo-nota" id="duoNota">Dólar <b>{spfx}{nf(abs(pfx))}%</b> desde '
+                    f'{rotulo(ant)} — por isso a leitura em dólares fica <b>{nf(abs(dif))} p.p. '
+                    f'{"acima" if dif > 0 else "abaixo"}</b> da leitura em reais.</p>')
 
     fx = months[ult]["fx"]
     brl_tot = sum(months[ult]["vals"].get(a["id"],0) for a in accounts if a["cur"]=="BRL")
