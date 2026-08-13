@@ -5,13 +5,13 @@
 No computador, dentro desta pasta:
 
 ```bash
-gh repo create Investimentos --private --source=. --push
+gh repo create Investment --private --source=. --push
 ```
 
-Sem o GitHub CLI? Crie o repositório `Investimentos` em github.com/new e depois:
+Sem o GitHub CLI? Crie o repositório `Investment` em github.com/new e depois:
 
 ```bash
-git remote add origin https://github.com/SEU-USUARIO/Investimentos.git
+git remote add origin https://github.com/SEU-USUARIO/Investment.git
 git push -u origin main
 ```
 
@@ -23,7 +23,7 @@ O arquivo `.github/workflows/pages.yml` já está pronto — ele publica a pasta
 a cada push para `main`. O endereço fica:
 
 ```
-https://SEU-USUARIO.github.io/Investimentos/
+https://SEU-USUARIO.github.io/Investment/
 ```
 
 Esse é o link para enviar. Ele nunca muda.

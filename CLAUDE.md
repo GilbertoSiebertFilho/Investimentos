@@ -144,7 +144,7 @@ imóveis ficam fora (não variam mês a mês — estão no modelo Excel em `docs
 
 ## Repositório e publicação
 
-Repositório: **Investimentos** (branch `main`). Já inicializado, com
+Repositório: **Investment** (branch `main`). Já inicializado, com
 `.github/workflows/pages.yml` publicando a pasta `site/` via GitHub Actions a cada
 push. Ligar uma vez em Settings → Pages → Source: GitHub Actions. Ver `PUBLICAR.md`.
 
