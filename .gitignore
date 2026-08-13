@@ -1,3 +1,9 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# NUNCA versionar: o repositorio e' PUBLICO e esta pasta traz o patrimonio total
+# (R$ 22 mi), a composicao dos bens e as cidades onde eles estao. O site nao usa
+# nada daqui -- o pages.yml publica so a pasta site/. Os arquivos continuam
+# existindo no computador, apenas fora do git.
+docs/
