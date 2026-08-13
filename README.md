@@ -36,5 +36,7 @@ todos os saldos.
     CLAUDE.md               ← contexto para o Claude Code
     tools/gerar.py          ← reconstrói o app a partir do template
     template/               ← molde sem dados (template.html)
-    site/index.html         ← cópia pronta para hospedar (link da família)
+    site/index.html         ← o que vai para o ar (link da família)
+    tools/atualizar-site.sh ← regenera e publica num comando
+    PUBLICAR.md             ← como criar o repositório e ligar o GitHub Pages
     docs/                   ← modelo Excel de projeção até 2080 + relatório

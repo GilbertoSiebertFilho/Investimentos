@@ -142,7 +142,21 @@ imóveis ficam fora (não variam mês a mês — estão no modelo Excel em `docs
 - Sem build/npm. É um HTML só, e deve continuar assim: abrir em qualquer celular
   sem internet é requisito, não acidente.
 
-## Publicação por link (site estático)
+## Repositório e publicação
+
+Repositório: **Investimentos** (branch `main`). Já inicializado, com
+`.github/workflows/pages.yml` publicando a pasta `site/` via GitHub Actions a cada
+push. Ligar uma vez em Settings → Pages → Source: GitHub Actions. Ver `PUBLICAR.md`.
+
+Atualizar tudo (copiar arquivo baixado → regenerar → commit → push):
+`./tools/atualizar-site.sh [arquivo.html]`.
+
+ATENÇÃO ao criar o repo: `site/index.html` contém os saldos reais. Em repositório
+público eles ficam legíveis por qualquer um direto no GitHub, sem sequer abrir o
+site. Sempre confirmar com o usuário antes de tornar público; o padrão sugerido é
+`--private` (Pages privado exige plano pago) ou Netlify/Cloudflare Pages.
+
+## Publicação por link (alternativas sem GitHub)
 
 O usuário quer que pessoas com um link vejam o livro sempre atualizado. O caminho é
 hospedar `site/index.html` (o `gerar.py` mantém essa cópia em dia) num host estático
