@@ -44,8 +44,9 @@
      Nada de white-space:nowrap: .plate tem overflow:hidden, entao um numero
      largo demais seria CORTADO em silencio em vez de quebrar linha. */
   .mestre{margin:0}
-  .mestre-var{margin:9px 0 0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.35}
-  .mestre-var:empty{display:none}
+  .mestre-var{margin:9px 0 0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.35;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:2px 22px}
+  .rot{letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:6px;font-size:.84em}
   .duo{display:grid;grid-template-columns:1fr 1fr;margin:15px 0 0;
     padding-top:13px;border-top:1px solid var(--rule)}
   .duo-col{min-width:0;padding:0 clamp(5px,1.8vw,22px)}
@@ -61,9 +62,12 @@
   /* min 13px, nao 16: num iPhone SE de 320px a coluna tem ~139px e
      "C$ 1.103.460,53" a 16px mede 157px -- estouraria. */
   .total.sec{font-size:clamp(13px,4.4vw,30px)}
+  /* min 9px: em 320px a coluna tem 144px e a linha "MÊS +US$ 37.954,05 +5,07%"
+     precisa caber. Se nao couber ela QUEBRA (nao ha nowrap), o que e' feio mas
+     nunca corta numero -- .plate tem overflow:hidden. */
   .duo-var{margin:5px 0 0;font-family:"IBM Plex Mono",monospace;
-    font-size:clamp(10px,2.9vw,12.5px);line-height:1.3}
-  .duo-var:empty{display:none}
+    font-size:clamp(9px,2.6vw,11.5px);line-height:1.3}
+  .duo-var + .duo-var{margin-top:2px}
   .duo-col.sem-fx{opacity:.45}   /* cambio daquela moeda em branco: esmaece, nao some */
   .duo-nota{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--rule);
     font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.45;color:var(--ink-soft)}
@@ -181,7 +185,7 @@
   .toast.on{transform:translateX(-50%) translateY(0)}
   .olho{position:absolute;top:24px;right:0;background:transparent;border:1px solid var(--rule);border-radius:var(--r);padding:5px 11px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer}
   .olho:hover{border-color:var(--ink);color:var(--ink)}
-  body.privado :is(.total,#deltaMes,#deltaAcum,#deltaMesUsd,#deltaAcumUsd,#deltaMesCad,#deltaAcumCad,#duoNota,#split,#efeitos,.sum-line .v,.erow input,.erow .prev,.chart-box svg,.fxcell-form input,.hintline){filter:blur(8px)}
+  body.privado :is(.total,#deltaMes,#deltaAno,#deltaAcum,#deltaMesUsd,#deltaAnoUsd,#deltaAcumUsd,#deltaMesCad,#deltaAnoCad,#deltaAcumCad,#duoNota,#split,#efeitos,.sum-line .v,.erow input,.erow .prev,.chart-box svg,.fxcell-form input,.hintline){filter:blur(8px)}
   body.privado td:not(.mes){filter:blur(6px)}
   @media print{
     @page{size:A4 landscape;margin:12mm}
@@ -228,19 +232,24 @@
 
     <div class="mestre">
       <p class="total" id="totalNow"><span class="cifra">R$</span>—</p>
-      <p class="mestre-var"><span id="deltaMes" class="delta flat"></span></p>
+      <p class="mestre-var">
+        <span class="rend"><span class="rot">no mês</span><span id="deltaMes" class="delta flat"></span></span>
+        <span class="rend"><span class="rot">no ano</span><span id="deltaAno" class="delta flat"></span></span>
+      </p>
     </div>
 
     <div class="duo" id="duo">
       <div class="duo-col">
         <p class="duo-cap">em dólar americano<span class="cot" id="capUsd"></span></p>
         <p class="total sec" id="totalUsd"><span class="cifra">US$</span>—</p>
-        <p class="duo-var"><span id="deltaMesUsd" class="delta flat"></span></p>
+        <p class="duo-var"><span class="rot">mês</span><span id="deltaMesUsd" class="delta flat"></span></p>
+        <p class="duo-var"><span class="rot">ano</span><span id="deltaAnoUsd" class="delta flat"></span></p>
       </div>
       <div class="duo-col">
         <p class="duo-cap">em dólar canadense<span class="cot" id="capCad"></span></p>
         <p class="total sec" id="totalCad"><span class="cifra">C$</span>—</p>
-        <p class="duo-var"><span id="deltaMesCad" class="delta flat"></span></p>
+        <p class="duo-var"><span class="rot">mês</span><span id="deltaMesCad" class="delta flat"></span></p>
+        <p class="duo-var"><span class="rot">ano</span><span id="deltaAnoCad" class="delta flat"></span></p>
       </div>
     </div>
 
@@ -478,6 +487,21 @@ const totalDe = k => state.accounts.reduce((s,a)=> s + emReais(k,a), 0);
    existiu. Devolve null quando o lancamento nao tem aquele cambio, para o
    cabecalho mostrar "—" em vez de dividir por zero e imprimir Infinity. */
 const totalEmMoeda = (k,cur) => { const r = taxa(k,cur); return r > 0 ? totalDe(k) / r : null; };
+/* Base de comparacao de "no mes" / "no ano": o ultimo lancamento ANTERIOR ao
+   inicio do periodo -- e' o saldo com que o periodo comecou. Quando o livro
+   comeca DENTRO do periodo (nao existe nada antes), cai para o primeiro
+   lancamento do proprio periodo; assim o "no ano" de um livro iniciado em
+   julho mede desde julho em vez de sumir. Devolve null se nao ha com o que
+   comparar (o foco e' o primeiro lancamento de todos). */
+function baseDoPeriodo(foco, inicio){
+  const ks = chaves();
+  const antes = ks.filter(k => k < inicio);
+  if (antes.length) return antes[antes.length - 1];
+  const dentro = ks.filter(k => k >= inicio && k < foco);
+  return dentro.length ? dentro[0] : null;
+}
+const inicioMes = k => k.slice(0,7) + "-01";
+const inicioAno = k => k.slice(0,4) + "-01-01";
 const totalMoeda = (k,cur) => state.accounts.filter(a=>a.cur===cur).reduce((s,a)=> s + (nativo(k,a)||0), 0);
 const varPct = (novo,velho) => (velho === 0 || velho === undefined || velho === null || !isFinite(velho)) ? null : (novo - velho) / velho * 100;
 const pctTxt = p => p === null ? "—" : (p > 0 ? "+" : p < 0 ? "−" : "") + nf(Math.abs(p),2) + "%";
@@ -819,12 +843,13 @@ function renderPlate(){
   const ks = chaves();
   const el = document.getElementById("totalNow"), ref = document.getElementById("mesRef");
   const dm = document.getElementById("deltaMes"), da = document.getElementById("deltaAcum");
+  const dan = document.getElementById("deltaAno");
   const sp = document.getElementById("split"), ef = document.getElementById("efeitos");
   const nota = document.getElementById("duoNota");
   const gid = id => document.getElementById(id);
   const MOEDAS = [
-    { cur:"USD", sim:"US$", nome:"dólar",            tot:gid("totalUsd"), dm:gid("deltaMesUsd"), da:gid("deltaAcumUsd"), cap:gid("capUsd") },
-    { cur:"CAD", sim:"C$",  nome:"dólar canadense",  tot:gid("totalCad"), dm:gid("deltaMesCad"), da:gid("deltaAcumCad"), cap:gid("capCad") }
+    { cur:"USD", sim:"US$", tot:gid("totalUsd"), dm:gid("deltaMesUsd"), dan:gid("deltaAnoUsd"), da:gid("deltaAcumUsd"), cap:gid("capUsd") },
+    { cur:"CAD", sim:"C$",  tot:gid("totalCad"), dm:gid("deltaMesCad"), dan:gid("deltaAnoCad"), da:gid("deltaAcumCad"), cap:gid("capCad") }
   ];
   const foco = document.getElementById("mesInput").value || (ks.length ? ks[ks.length-1] : null);
   const snap = snapshotForm();
@@ -832,10 +857,12 @@ function renderPlate(){
 
   if (!foco || (!ks.length && !temAlgo)){
     el.innerHTML = '<span class="cifra">R$</span>—'; ref.textContent = "sem lançamentos";
-    dm.className = "delta flat"; dm.textContent = ""; da.textContent = "";
+    dm.className = "delta flat"; dm.textContent = "—";
+    dan.className = "delta flat"; dan.textContent = "—"; da.textContent = "";
     MOEDAS.forEach(m => {
       m.tot.innerHTML = '<span class="cifra">' + m.sim + '</span>—';
-      m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = "";
+      m.dm.className = "delta flat"; m.dm.textContent = "—";
+      m.dan.className = "delta flat"; m.dan.textContent = "—"; m.da.textContent = "";
       m.cap.textContent = ""; m.tot.closest(".duo-col").classList.remove("sem-fx");
     });
     nota.innerHTML = "";
@@ -862,46 +889,56 @@ function renderPlate(){
   ref.innerHTML = rotulo(foco) + selo;
   document.title = "Livro do patrimônio · " + rotulo(foco);
 
-  const antes = ks.filter(k => k < foco);
-  const a0 = antes.length ? antes[antes.length-1] : null;
-  if (a0){
-    const ant = totalDe(a0), base0 = antes[0] || foco;
-    const d = t - ant, pp = varPct(t, ant);
-    dm.className = "delta " + cls(d);
-    dm.textContent = (d>=0?"+":"−") + brl(Math.abs(d)) + "  (" + pctTxt(pp) + ") vs " + rotulo(a0);
-    /* Com um unico lancamento anterior o acumulado E' a variacao do periodo.
-       Repetir o mesmo numero custa uma linha inteira do cabecalho no celular. */
-    const temAcum = base0 !== a0;
-    da.textContent = temAcum ? "acumulado desde " + rotulo(base0) + ": R$ " + pctTxt(varPct(t, totalDe(base0))) : "";
+  /* Uma linha de rendimento: quanto rendeu no periodo, em valor e em %.
+     O saldo atual vem do FORMULARIO (t / m.t), a base vem do que esta GRAVADO --
+     assim a previa de um lancamento ainda nao salvo ja mostra o rendimento. */
+  const linhaRend = (elm, atual, base, sim, baseK) => {
+    if (atual === null || base === null || base === undefined || !baseK){
+      elm.className = "delta flat"; elm.textContent = "—"; elm.removeAttribute("title"); return;
+    }
+    const d = atual - base;
+    elm.className = "delta " + cls(d);
+    elm.textContent = (d >= 0 ? "+" : "−") + sim + " " + nf(Math.abs(d)) + "  " + pctTxt(varPct(atual, base));
+    elm.title = "desde " + rotulo(baseK);
+  };
 
-    /* Nas colunas estreitas o "vs <data>" sai: a linha do real logo acima ja
-       diz contra quem a comparacao e' feita, e repetir estouraria a largura. */
-    const divergentes = [];
-    MOEDAS.forEach(m => {
-      const antM = totalEmMoeda(a0, m.cur), baseM = totalEmMoeda(base0, m.cur);
-      if (m.t === null || antM === null){
-        m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = ""; return;
-      }
-      const dM = m.t - antM, ppM = varPct(m.t, antM);
-      m.dm.className = "delta " + cls(dM);
-      m.dm.textContent = (dM>=0?"+":"−") + m.sim + " " + nf(Math.abs(dM)) + "  (" + pctTxt(ppM) + ")";
-      m.da.textContent = (temAcum && baseM !== null) ? m.sim + " " + pctTxt(varPct(m.t, baseM)) : "";
-      const pfx = varPct(m.fx, taxa(a0, m.cur));
-      if (pp !== null && ppM !== null && pfx !== null && Math.abs(ppM - pp) >= 0.05)
-        divergentes.push((m.cur === "USD" ? "dólar" : "canadense") + " <b>" + pctTxt(pfx) + "</b>");
-    });
-    /* Tres percentuais diferentes para o mesmo dinheiro parecem erro de conta.
-       A causa e' sempre o cambio, entao a pagina diz qual foi o movimento. */
-    nota.innerHTML = divergentes.length
-      ? "Câmbio desde " + rotulo(a0) + ": " + divergentes.join(", ") +
-        ". É o que separa as três leituras."
-      : "";
-  } else {
-    dm.className = "delta flat"; dm.textContent = "";
-    da.textContent = ks.length && salvo ? "primeiro lançamento do livro" : (ks.length ? "anterior a todos os lançamentos" : "primeiro lançamento do livro");
-    MOEDAS.forEach(m => { m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = ""; });
-    nota.innerHTML = "";
-  }
+  const bMes = baseDoPeriodo(foco, inicioMes(foco));
+  const bAno = baseDoPeriodo(foco, inicioAno(foco));
+
+  linhaRend(dm,  t, bMes ? totalDe(bMes) : null, "R$", bMes);
+  linhaRend(dan, t, bAno ? totalDe(bAno) : null, "R$", bAno);
+  MOEDAS.forEach(m => {
+    linhaRend(m.dm,  m.t, bMes ? totalEmMoeda(bMes, m.cur) : null, m.sim, bMes);
+    linhaRend(m.dan, m.t, bAno ? totalEmMoeda(bAno, m.cur) : null, m.sim, bAno);
+  });
+
+  /* "Acumulado desde o inicio do livro" so aparece quando diz algo que o "no ano"
+     ainda nao disse -- ou seja, quando o livro comecou num ano anterior. */
+  const k0 = ks.length ? ks[0] : null;
+  const mostraAcum = k0 && bAno && k0 !== bAno && k0 < foco;
+  da.textContent = mostraAcum ? "acumulado desde " + rotulo(k0) + ": R$ " + pctTxt(varPct(t, totalDe(k0))) : "";
+  MOEDAS.forEach(m => {
+    const b = mostraAcum ? totalEmMoeda(k0, m.cur) : null;
+    m.da.textContent = (b !== null && m.t !== null) ? m.sim + " " + pctTxt(varPct(m.t, b)) : "";
+  });
+  if (!bMes && !bAno)
+    da.textContent = salvo ? "primeiro lançamento do livro" : "anterior a todos os lançamentos";
+
+  /* Tres percentuais diferentes para o mesmo dinheiro parecem erro de conta.
+     A causa e' sempre o cambio, entao a pagina diz qual foi o movimento. */
+  const ppMes = bMes ? varPct(t, totalDe(bMes)) : null;
+  const divergentes = [];
+  if (bMes) MOEDAS.forEach(m => {
+    const baseM = totalEmMoeda(bMes, m.cur);
+    if (m.t === null || baseM === null) return;
+    const ppM = varPct(m.t, baseM), pfx = varPct(m.fx, taxa(bMes, m.cur));
+    if (ppMes !== null && ppM !== null && pfx !== null && Math.abs(ppM - ppMes) >= 0.05)
+      divergentes.push((m.cur === "USD" ? "dólar" : "canadense") + " <b>" + pctTxt(pfx) + "</b>");
+  });
+  nota.innerHTML = divergentes.length
+    ? "Câmbio desde " + rotulo(bMes) + ": " + divergentes.join(", ") +
+      ". É o que separa as três leituras."
+    : "";
 
   const brlTot = state.accounts.filter(a=>a.cur==="BRL").reduce((x,a)=>x+(snap.vals[a.id]||0),0);
   const cad = state.accounts.filter(a=>a.cur==="CAD").reduce((x,a)=>x+(snap.vals[a.id]||0),0);
@@ -911,13 +948,15 @@ function renderPlate(){
     "<span>C$ " + nf(cad) + " × " + nf(snap.fx.cad,4) + " = " + brl(cad*snap.fx.cad) + "</span>" +
     "<span>US$ " + nf(usd) + " × " + nf(snap.fx.usd,4) + " = " + brl(usd*snap.fx.usd) + "</span>";
 
-  if (a0){
+  /* A decomposicao usa a MESMA base do "no mes" logo acima, de propósito:
+     assim Δ por saldo + Δ por câmbio fecha exatamente com o rendimento do mês. */
+  if (bMes){
     let efS = 0, efC = 0;
     state.accounts.forEach(a => {
-      const v0 = nativo(a0,a) || 0, v1 = snap.vals[a.id] || 0;
+      const v0 = nativo(bMes,a) || 0, v1 = snap.vals[a.id] || 0;
       const f1 = a.cur === "CAD" ? snap.fx.cad : a.cur === "USD" ? snap.fx.usd : 1;
-      efS += (v1 - v0) * taxa(a0, a.cur);
-      efC += v1 * (f1 - taxa(a0, a.cur));
+      efS += (v1 - v0) * taxa(bMes, a.cur);
+      efC += v1 * (f1 - taxa(bMes, a.cur));
     });
     const f = v => (v >= 0 ? "+" : "−") + "R$ " + nf(Math.abs(v));
     ef.innerHTML = '<span>Δ por saldo: <b class="'+cls(efS)+'">'+f(efS)+'</b></span>' +

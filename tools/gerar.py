@@ -131,41 +131,67 @@ def main():
             f'<span class="cot" id="cap{suf}">'
             + (f'{sim} 1 = R$ {nf(fxm,4)}' if tm is not None else 'sem câmbio')
             + '</span>')
+    # Base de "no mês"/"no ano": mesma regra do baseDoPeriodo() em JS -- o último
+    # lançamento ANTERIOR ao início do período; se o livro começa dentro dele,
+    # cai para o primeiro lançamento do próprio período. Os dois caminhos têm de
+    # concordar, senão o número muda sozinho quando o JavaScript carrega.
+    def base_periodo(foco, inicio):
+        antes = [k for k in ks if k < inicio]
+        if antes:
+            return antes[-1]
+        dentro = [k for k in ks if inicio <= k < foco]
+        return dentro[0] if dentro else None
+
+    def linha_rend(sufixo, atual, base, sim, base_k):
+        alvo = f'<span id="{sufixo}" class="delta flat"></span>'
+        if atual is None or not base or not base_k:
+            return src.replace(alvo, f'<span id="{sufixo}" class="delta flat">—</span>')
+        d = atual - base
+        pct = (atual/base - 1) * 100
+        s = "+" if d >= 0 else "−"
+        c = "up" if d > 0 else "down" if d < 0 else "flat"
+        sp = "+" if pct > 0 else "−" if pct < 0 else ""
+        return src.replace(alvo,
+            f'<span id="{sufixo}" class="delta {c}" title="desde {rotulo(base_k)}">'
+            f'{s}{sim} {nf(abs(d))}  {sp}{nf(abs(pct))}%</span>')
+
+    b_mes = base_periodo(ult, ult[:7] + "-01")
+    b_ano = base_periodo(ult, ult[:4] + "-01-01")
+
+    src = linha_rend("deltaMes", t, total(b_mes) if b_mes else None, "R$", b_mes)
+    src = linha_rend("deltaAno", t, total(b_ano) if b_ano else None, "R$", b_ano)
+    for m, sim, suf, _nome in MOEDAS:
+        tm = total_moeda(ult, m)
+        src = linha_rend(f"deltaMes{suf}", tm, total_moeda(b_mes, m) if b_mes else None, sim, b_mes)
+        src = linha_rend(f"deltaAno{suf}", tm, total_moeda(b_ano, m) if b_ano else None, sim, b_ano)
+
     if len(ks) > 1:
-        ant = ks[-2]
-        d = t - total(ant); p = (t/total(ant) - 1) * 100
-        sinal = "+" if d >= 0 else "−"
-        classe = "up" if d > 0 else "down" if d < 0 else "flat"
-        src = src.replace('<span id="deltaMes" class="delta flat"></span>',
-            f'<span id="deltaMes" class="delta {classe}">{sinal}R$ {nf(abs(d))}  ({sinal}{nf(abs(p))}%) vs {rotulo(ant)}</span>')
-        # Com um unico lancamento anterior o acumulado E' a variacao do periodo;
-        # repetir o mesmo numero custa uma linha inteira do cabecalho no celular.
-        # Mesma regra do renderPlate() -- os dois caminhos precisam concordar.
-        if len(ks) > 2:
+        p = (t/total(b_mes) - 1) * 100 if b_mes else None
+        # "acumulado desde o início do livro" só aparece quando diz algo que o
+        # "no ano" ainda não disse -- ou seja, quando o livro começou noutro ano.
+        if b_ano and ks[0] != b_ano and ks[0] < ult:
             pa = (t/total(ks[0]) - 1) * 100
             sa = "+" if pa >= 0 else "−"
             src = src.replace('<span id="deltaAcum" class="muted"></span>',
                 f'<span id="deltaAcum" class="muted">acumulado desde {rotulo(ks[0])}: R$ {sa}{nf(abs(pa))}%</span>')
-
-        divergentes = []
-        for m, sim, suf, nome in MOEDAS:
-            tm = total_moeda(ult, m)
-            tm_ant, tm_ini = total_moeda(ant, m), total_moeda(ks[0], m)
-            if tm is None or not tm_ant:
-                continue
-            dm = tm - tm_ant; pm = (tm/tm_ant - 1) * 100
-            sm = "+" if dm >= 0 else "−"
-            cm = "up" if dm > 0 else "down" if dm < 0 else "flat"
-            # sem "vs <data>": a linha do real logo acima já diz contra quem é a
-            # comparação, e repetir estouraria a largura da coluna no celular.
-            src = src.replace(f'<span id="deltaMes{suf}" class="delta flat"></span>',
-                f'<span id="deltaMes{suf}" class="delta {cm}">{sm}{sim} {nf(abs(dm))}  ({sm}{nf(abs(pm))}%)</span>')
-            if tm_ini and len(ks) > 2:
+            for m, sim, suf, _nome in MOEDAS:
+                tm, tm_ini = total_moeda(ult, m), total_moeda(ks[0], m)
+                if tm is None or not tm_ini:
+                    continue
                 pam = (tm/tm_ini - 1) * 100
                 sam = "+" if pam >= 0 else "−"
                 src = src.replace(f'<span id="deltaAcum{suf}" class="muted"></span>',
                     f'<span id="deltaAcum{suf}" class="muted">{sim} {sam}{nf(abs(pam))}%</span>')
-            fx0 = months[ant]["fx"].get(m) or 0
+
+        divergentes = []
+        for m, sim, suf, nome in MOEDAS:
+            if not b_mes or p is None:
+                continue
+            tm, tm_base = total_moeda(ult, m), total_moeda(b_mes, m)
+            if tm is None or not tm_base:
+                continue
+            pm = (tm/tm_base - 1) * 100
+            fx0 = months[b_mes]["fx"].get(m) or 0
             fx1 = months[ult]["fx"].get(m) or 0
             if fx0 > 0 and abs(pm - p) >= 0.05:
                 pfx = (fx1/fx0 - 1) * 100
@@ -173,7 +199,7 @@ def main():
                 divergentes.append(f'{nome} <b>{spfx}{nf(abs(pfx))}%</b>')
         if divergentes:
             src = src.replace('<p class="duo-nota" id="duoNota"></p>',
-                f'<p class="duo-nota" id="duoNota">Câmbio desde {rotulo(ant)}: '
+                f'<p class="duo-nota" id="duoNota">Câmbio desde {rotulo(b_mes)}: '
                 + ", ".join(divergentes)
                 + '. É o que separa as três leituras.</p>')
 
