@@ -29,9 +29,21 @@ Esse link nunca muda. É ele que você envia para as pessoas.
 2. Clique em **Baixar para o site (index.html)**.
 3. No Terminal, nesta pasta:
 
+**Windows (PowerShell):**
+
+```powershell
+.\tools\atualizar-site.ps1 $HOME\Downloads\index.html
+```
+
+**macOS / Linux:**
+
 ```bash
 ./tools/atualizar-site.sh ~/Downloads/index.html
 ```
+
+> No Windows o Python se chama `python`, não `python3` — por isso existe a versão
+> `.ps1`. As duas fazem exatamente a mesma coisa: copiar o arquivo baixado,
+> regenerar o site e publicar.
 
 Em cerca de um minuto o link já mostra os números novos. Quem tiver o endereço
 só precisa recarregar a página.
