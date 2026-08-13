@@ -22,50 +22,53 @@
   body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
   .wrap{max-width:1120px;margin:0 auto;padding:20px 16px 72px}
 
-  .plate{position:relative;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:26px 0 22px;margin-bottom:6px;overflow:hidden}
+  .plate{position:relative;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:26px 0 22px;margin-bottom:6px;overflow:hidden;text-align:center}
   .plate::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
     background:repeating-linear-gradient(115deg,transparent 0 5px,var(--rule) 5px 5.6px);
     -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 62%);mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 62%)}
   .plate>*{position:relative}
   .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px}
-  .total{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:clamp(29px,7.6vw,50px);line-height:1.05;letter-spacing:-.025em;margin:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .total{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:clamp(30px,8.4vw,58px);line-height:1.05;letter-spacing:-.025em;margin:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
   .total .cifra{font-size:.4em;vertical-align:.52em;margin-right:.2em;color:var(--ink-soft);font-weight:500;letter-spacing:.02em}
-  .plate-foot{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;margin-top:14px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .plate-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;align-items:baseline;margin-top:13px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
   .delta{font-weight:600;font-variant-numeric:tabular-nums}
   .delta.up{color:var(--up)} .delta.down{color:var(--down)} .delta.flat{color:var(--ink-soft)}
   .muted{color:var(--ink-soft)}
-  .split{margin-top:10px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 18px}
+  .split{margin-top:10px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px}
 
-  /* --- duo: o mesmo total lido em reais e em dolares --------------------
-     Mobile-first: EMPILHADO por padrao. Dois numeros em IBM Plex Mono 600
-     nao cabem lado a lado num celular -- o cabecalho ja ocupa ~317px de um
-     iPhone de 390px, e altura e' o recurso escasso aqui, nao largura.
-     So a partir de 720px eles viram colunas irmas de verdade.
+  /* --- cabecalho: real grande no centro, moedas estrangeiras lado a lado ---
+     Os dois secundarios cabem lado a lado ATE no iPhone justamente por serem
+     pequenos: "C$ 1.103.460,53" a 16px ocupa ~148px de uma coluna de ~164px.
+     Dois totais GRANDES lado a lado NAO cabiam (o real sozinho ja mede 322px
+     dos 343px uteis num iPhone) -- por isso o real fica sozinho em cima.
      Nada de white-space:nowrap: .plate tem overflow:hidden, entao um numero
      largo demais seria CORTADO em silencio em vez de quebrar linha. */
-  .duo{margin:0}
-  .duo-col{min-width:0}
-  .duo-col + .duo-col{margin-top:10px;padding-top:9px;border-top:1px solid var(--rule)}
-  .duo-cap{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin:0 0 2px;
-    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
-  .duo-cap .cot{letter-spacing:.03em;text-transform:none;font-size:10.5px;opacity:.8;font-variant-numeric:tabular-nums}
-  .duo-var{margin:5px 0 0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.3}
+  .mestre{margin:0}
+  .mestre-var{margin:9px 0 0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.35}
+  .mestre-var:empty{display:none}
+  .duo{display:grid;grid-template-columns:1fr 1fr;margin:15px 0 0;
+    padding-top:13px;border-top:1px solid var(--rule)}
+  .duo-col{min-width:0;padding:0 clamp(5px,1.8vw,22px)}
+  .duo-col + .duo-col{border-left:1px solid var(--rule)}
+  /* "em dolar americano" e "em dolar canadense" tem o MESMO numero de letras de
+     proposito: rotulos de comprimento igual quebram na mesma largura, e so assim
+     os dois totais ficam alinhados na horizontal em qualquer tela. Se mudar um
+     rotulo, mude o outro junto -- senao um numero desce e o outro nao. */
+  .duo-cap{margin:0 0 3px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);line-height:1.35}
+  .duo-cap .cot{display:block;letter-spacing:.02em;text-transform:none;font-size:10px;
+    opacity:.75;font-variant-numeric:tabular-nums}
+  /* min 13px, nao 16: num iPhone SE de 320px a coluna tem ~139px e
+     "C$ 1.103.460,53" a 16px mede 157px -- estouraria. */
+  .total.sec{font-size:clamp(13px,4.4vw,30px)}
+  .duo-var{margin:5px 0 0;font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(10px,2.9vw,12.5px);line-height:1.3}
   .duo-var:empty{display:none}
-  .total.sec{font-size:clamp(21px,5.4vw,38px)}
-  .duo.sem-fx .duo-col + .duo-col{opacity:.45}   /* cambio USD em branco: esmaece, nao some */
-  .duo-nota{margin:11px 0 0;padding-top:9px;border-top:1px solid var(--rule);
+  .duo-col.sem-fx{opacity:.45}   /* cambio daquela moeda em branco: esmaece, nao some */
+  .duo-nota{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--rule);
     font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.45;color:var(--ink-soft)}
   .duo-nota:empty{display:none}
   .duo-nota b{font-weight:600}
-  @media (min-width:720px){
-    .duo{display:flex;align-items:flex-start}
-    .duo-col{flex:1 1 0}
-    .duo-col:first-child{padding-right:clamp(18px,3vw,36px)}
-    .duo-col + .duo-col{margin-top:0;padding-top:0;border-top:0;
-      border-left:1px solid var(--rule);padding-left:clamp(18px,3vw,36px)}
-    .total{font-size:clamp(26px,3.5vw,44px)}
-    .total.sec{font-size:clamp(21px,2.8vw,34px)}
-  }
 
   section{margin-top:34px}
   h2{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);font-weight:500;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
@@ -178,7 +181,7 @@
   .toast.on{transform:translateX(-50%) translateY(0)}
   .olho{position:absolute;top:24px;right:0;background:transparent;border:1px solid var(--rule);border-radius:var(--r);padding:5px 11px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer}
   .olho:hover{border-color:var(--ink);color:var(--ink)}
-  body.privado :is(.total,#deltaMes,#deltaAcum,#deltaMesUsd,#deltaAcumUsd,#duoNota,#split,#efeitos,.sum-line .v,.erow input,.erow .prev,.chart-box svg,.fxcell-form input,.hintline){filter:blur(8px)}
+  body.privado :is(.total,#deltaMes,#deltaAcum,#deltaMesUsd,#deltaAcumUsd,#deltaMesCad,#deltaAcumCad,#duoNota,#split,#efeitos,.sum-line .v,.erow input,.erow .prev,.chart-box svg,.fxcell-form input,.hintline){filter:blur(8px)}
   body.privado td:not(.mes){filter:blur(6px)}
   @media print{
     @page{size:A4 landscape;margin:12mm}
@@ -188,11 +191,11 @@
     #secLancar,#secContas,.share,.row-actions,.seg,.olho,td.act,.lnk,#dicaLedger,.toast,.modal,.fxauto{display:none!important}
     section{margin-top:20px;break-inside:avoid}
     .plate{border-color:#000}
-    .duo{display:flex;align-items:flex-start}
-    .duo-col{flex:1 1 0}
-    .duo-col:first-child{padding-right:26px}
-    .duo-col + .duo-col{margin-top:0;padding-top:0;border-top:0;border-left:1px solid #999;padding-left:26px}
-    .total{font-size:30px} .total.sec{font-size:23px}
+    .duo{grid-template-columns:1fr 1fr;border-top-color:#999}
+    .duo-col{padding:0 26px}
+    .duo-col + .duo-col{border-left-color:#999}
+    .total{font-size:34px} .total.sec{font-size:21px}
+    .duo-var{font-size:11px}
     .duo-nota{color:#000;border-top-color:#999}
     .scroller{overflow:visible;border-color:#999}
     table{font-size:9.5px}
@@ -223,16 +226,21 @@
     <button class="olho" id="olho" aria-pressed="false">ocultar valores</button>
     <p class="eyebrow">Livro do patrimônio · contas da coluna A</p>
 
+    <div class="mestre">
+      <p class="total" id="totalNow"><span class="cifra">R$</span>—</p>
+      <p class="mestre-var"><span id="deltaMes" class="delta flat"></span></p>
+    </div>
+
     <div class="duo" id="duo">
       <div class="duo-col">
-        <p class="duo-cap">em reais</p>
-        <p class="total" id="totalNow"><span class="cifra">R$</span>—</p>
-        <p class="duo-var"><span id="deltaMes" class="delta flat"></span></p>
-      </div>
-      <div class="duo-col">
-        <p class="duo-cap">em dólares <span class="cot" id="capUsd"></span></p>
+        <p class="duo-cap">em dólar americano<span class="cot" id="capUsd"></span></p>
         <p class="total sec" id="totalUsd"><span class="cifra">US$</span>—</p>
         <p class="duo-var"><span id="deltaMesUsd" class="delta flat"></span></p>
+      </div>
+      <div class="duo-col">
+        <p class="duo-cap">em dólar canadense<span class="cot" id="capCad"></span></p>
+        <p class="total sec" id="totalCad"><span class="cifra">C$</span>—</p>
+        <p class="duo-var"><span id="deltaMesCad" class="delta flat"></span></p>
       </div>
     </div>
 
@@ -241,6 +249,7 @@
       <span id="mesRef" class="muted">sem lançamentos</span>
       <span id="deltaAcum" class="muted"></span>
       <span id="deltaAcumUsd" class="muted"></span>
+      <span id="deltaAcumCad" class="muted"></span>
     </div>
     <div class="split" id="split"></div>
     <div class="split" id="efeitos"></div>
@@ -464,11 +473,11 @@ const taxa = (k,cur) => cur === "CAD" ? (fxDe(k).cad || 0) : cur === "USD" ? (fx
 const nativo = (k,a) => state.months[k]?.vals?.[a.id];
 const emReais = (k,a) => (nativo(k,a) || 0) * taxa(k,a.cur);
 const totalDe = k => state.accounts.reduce((s,a)=> s + emReais(k,a), 0);
-/* O total lido em dolares. Converte SEMPRE com o fx.usd DAQUELE lancamento --
-   usar a cotacao de outro dia inventaria variacao que nunca existiu.
-   Devolve null quando o lancamento nao tem cambio USD, para o cabecalho
-   mostrar "—" em vez de dividir por zero e imprimir Infinity. */
-const totalUsdDe = k => { const u = taxa(k,"USD"); return u > 0 ? totalDe(k) / u : null; };
+/* O total lido numa moeda estrangeira. Converte SEMPRE com o cambio DAQUELE
+   lancamento -- usar a cotacao de outro dia inventaria variacao que nunca
+   existiu. Devolve null quando o lancamento nao tem aquele cambio, para o
+   cabecalho mostrar "—" em vez de dividir por zero e imprimir Infinity. */
+const totalEmMoeda = (k,cur) => { const r = taxa(k,cur); return r > 0 ? totalDe(k) / r : null; };
 const totalMoeda = (k,cur) => state.accounts.filter(a=>a.cur===cur).reduce((s,a)=> s + (nativo(k,a)||0), 0);
 const varPct = (novo,velho) => (velho === 0 || velho === undefined || velho === null || !isFinite(velho)) ? null : (novo - velho) / velho * 100;
 const pctTxt = p => p === null ? "—" : (p > 0 ? "+" : p < 0 ? "−" : "") + nf(Math.abs(p),2) + "%";
@@ -811,19 +820,25 @@ function renderPlate(){
   const el = document.getElementById("totalNow"), ref = document.getElementById("mesRef");
   const dm = document.getElementById("deltaMes"), da = document.getElementById("deltaAcum");
   const sp = document.getElementById("split"), ef = document.getElementById("efeitos");
-  const tuEl = document.getElementById("totalUsd"), duo = document.getElementById("duo");
-  const dmu = document.getElementById("deltaMesUsd"), dau = document.getElementById("deltaAcumUsd");
-  const capU = document.getElementById("capUsd"), nota = document.getElementById("duoNota");
+  const nota = document.getElementById("duoNota");
+  const gid = id => document.getElementById(id);
+  const MOEDAS = [
+    { cur:"USD", sim:"US$", nome:"dólar",            tot:gid("totalUsd"), dm:gid("deltaMesUsd"), da:gid("deltaAcumUsd"), cap:gid("capUsd") },
+    { cur:"CAD", sim:"C$",  nome:"dólar canadense",  tot:gid("totalCad"), dm:gid("deltaMesCad"), da:gid("deltaAcumCad"), cap:gid("capCad") }
+  ];
   const foco = document.getElementById("mesInput").value || (ks.length ? ks[ks.length-1] : null);
   const snap = snapshotForm();
   const temAlgo = Object.keys(snap.vals).length > 0;
 
   if (!foco || (!ks.length && !temAlgo)){
     el.innerHTML = '<span class="cifra">R$</span>—'; ref.textContent = "sem lançamentos";
-    tuEl.innerHTML = '<span class="cifra">US$</span>—';
     dm.className = "delta flat"; dm.textContent = ""; da.textContent = "";
-    dmu.className = "delta flat"; dmu.textContent = ""; dau.textContent = "";
-    capU.textContent = ""; nota.innerHTML = ""; duo.classList.remove("sem-fx");
+    MOEDAS.forEach(m => {
+      m.tot.innerHTML = '<span class="cifra">' + m.sim + '</span>—';
+      m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = "";
+      m.cap.textContent = ""; m.tot.closest(".duo-col").classList.remove("sem-fx");
+    });
+    nota.innerHTML = "";
     sp.innerHTML = ""; ef.innerHTML = ""; return;
   }
 
@@ -831,12 +846,14 @@ function renderPlate(){
   const difere = salvo ? formDifereDoSalvo(foco, snap) : true;
   const t = totalSnap(snap);
   el.innerHTML = '<span class="cifra">R$</span>' + nf(t);
-  /* o dolar espelha o formulario em foco, com o cambio digitado nele */
-  const fu = snap.fx.usd || 0;
-  const tU = fu > 0 ? t / fu : null;
-  tuEl.innerHTML = '<span class="cifra">US$</span>' + (tU === null ? "—" : nf(tU));
-  duo.classList.toggle("sem-fx", tU === null);
-  capU.textContent = tU === null ? "sem câmbio" : "US$ 1 = R$ " + nf(fu,4);
+  /* as moedas estrangeiras espelham o formulario em foco, com o cambio digitado nele */
+  MOEDAS.forEach(m => {
+    m.fx = (m.cur === "USD" ? snap.fx.usd : snap.fx.cad) || 0;
+    m.t = m.fx > 0 ? t / m.fx : null;
+    m.tot.innerHTML = '<span class="cifra">' + m.sim + '</span>' + (m.t === null ? "—" : nf(m.t));
+    m.tot.closest(".duo-col").classList.toggle("sem-fx", m.t === null);
+    m.cap.textContent = m.t === null ? "sem câmbio" : m.sim + " 1 = R$ " + nf(m.fx,4);
+  });
 
   let selo = "";
   if (!salvo) selo = ' · <b class="down">prévia — ainda não gravada</b>';
@@ -857,29 +874,33 @@ function renderPlate(){
     const temAcum = base0 !== a0;
     da.textContent = temAcum ? "acumulado desde " + rotulo(base0) + ": R$ " + pctTxt(varPct(t, totalDe(base0))) : "";
 
-    const antU = totalUsdDe(a0), baseU = totalUsdDe(base0);
-    if (tU !== null && antU !== null){
-      const dU = tU - antU, ppU = varPct(tU, antU);
-      dmu.className = "delta " + cls(dU);
-      dmu.textContent = (dU>=0?"+":"−") + "US$ " + nf(Math.abs(dU)) + "  (" + pctTxt(ppU) + ") vs " + rotulo(a0);
-      dau.textContent = (temAcum && baseU !== null) ? "US$ " + pctTxt(varPct(tU, baseU)) : "";
-      /* As duas leituras divergem quando o cambio se mexe, e essa divergencia e'
-         a informacao que so existe por causa desta coluna. Sem explicar, os dois
-         percentuais diferentes parecem erro de conta. */
-      const pfx = varPct(fu, taxa(a0,"USD"));
-      if (pp !== null && ppU !== null && pfx !== null && Math.abs(ppU - pp) >= 0.05){
-        const dif = ppU - pp;
-        nota.innerHTML = "Dólar <b>" + pctTxt(pfx) + "</b> desde " + rotulo(a0) +
-          " — por isso a leitura em dólares fica <b>" + nf(Math.abs(dif)) + " p.p. " +
-          (dif > 0 ? "acima" : "abaixo") + "</b> da leitura em reais.";
-      } else nota.innerHTML = "";
-    } else {
-      dmu.className = "delta flat"; dmu.textContent = ""; dau.textContent = ""; nota.innerHTML = "";
-    }
+    /* Nas colunas estreitas o "vs <data>" sai: a linha do real logo acima ja
+       diz contra quem a comparacao e' feita, e repetir estouraria a largura. */
+    const divergentes = [];
+    MOEDAS.forEach(m => {
+      const antM = totalEmMoeda(a0, m.cur), baseM = totalEmMoeda(base0, m.cur);
+      if (m.t === null || antM === null){
+        m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = ""; return;
+      }
+      const dM = m.t - antM, ppM = varPct(m.t, antM);
+      m.dm.className = "delta " + cls(dM);
+      m.dm.textContent = (dM>=0?"+":"−") + m.sim + " " + nf(Math.abs(dM)) + "  (" + pctTxt(ppM) + ")";
+      m.da.textContent = (temAcum && baseM !== null) ? m.sim + " " + pctTxt(varPct(m.t, baseM)) : "";
+      const pfx = varPct(m.fx, taxa(a0, m.cur));
+      if (pp !== null && ppM !== null && pfx !== null && Math.abs(ppM - pp) >= 0.05)
+        divergentes.push((m.cur === "USD" ? "dólar" : "canadense") + " <b>" + pctTxt(pfx) + "</b>");
+    });
+    /* Tres percentuais diferentes para o mesmo dinheiro parecem erro de conta.
+       A causa e' sempre o cambio, entao a pagina diz qual foi o movimento. */
+    nota.innerHTML = divergentes.length
+      ? "Câmbio desde " + rotulo(a0) + ": " + divergentes.join(", ") +
+        ". É o que separa as três leituras."
+      : "";
   } else {
     dm.className = "delta flat"; dm.textContent = "";
     da.textContent = ks.length && salvo ? "primeiro lançamento do livro" : (ks.length ? "anterior a todos os lançamentos" : "primeiro lançamento do livro");
-    dmu.className = "delta flat"; dmu.textContent = ""; dau.textContent = ""; nota.innerHTML = "";
+    MOEDAS.forEach(m => { m.dm.className = "delta flat"; m.dm.textContent = ""; m.da.textContent = ""; });
+    nota.innerHTML = "";
   }
 
   const brlTot = state.accounts.filter(a=>a.cur==="BRL").reduce((x,a)=>x+(snap.vals[a.id]||0),0);

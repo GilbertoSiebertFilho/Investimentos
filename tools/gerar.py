@@ -106,24 +106,31 @@ def main():
     # Regra 4 do CLAUDE.md: o que o renderPlate() escreve em JS precisa existir
     # aqui também, senão o site publicado e a pré-visualização do app Arquivos do
     # iOS (que não roda script) mostram o total em reais ao lado de "US$ —".
-    def total_usd(k):
-        u = months[k]["fx"].get("usd") or 0
-        return total(k) / u if u > 0 else None
+    # o 4º campo é o nome curto usado na nota do câmbio — precisa bater com o
+    # rótulo que o renderPlate() usa em JS, senão o texto muda ao carregar
+    MOEDAS = [("usd", "US$", "Usd", "dólar"), ("cad", "C$", "Cad", "canadense")]
+
+    def total_moeda(k, m):
+        r = months[k]["fx"].get(m) or 0
+        return total(k) / r if r > 0 else None
 
     ult = ks[-1]
     t = total(ult)
-    tu = total_usd(ult)
-    fxu = months[ult]["fx"].get("usd") or 0
     src = src.replace('<p class="total" id="totalNow"><span class="cifra">R$</span>—</p>',
         f'<p class="total" id="totalNow"><span class="cifra">R$</span>{nf(t)}</p>')
-    src = src.replace('<p class="total sec" id="totalUsd"><span class="cifra">US$</span>—</p>',
-        f'<p class="total sec" id="totalUsd"><span class="cifra">US$</span>{nf(tu) if tu is not None else "—"}</p>')
-    src = src.replace('<span class="cot" id="capUsd"></span>',
-        '<span class="cot" id="capUsd">'
-        + (f'US$ 1 = R$ {nf(fxu,4)}' if tu is not None else 'sem câmbio')
-        + '</span>')
     src = src.replace('<span id="mesRef" class="muted">sem lançamentos</span>',
         f'<span id="mesRef" class="muted">{rotulo(ult)}</span>')
+    for m, sim, suf, _nome in MOEDAS:
+        tm = total_moeda(ult, m)
+        fxm = months[ult]["fx"].get(m) or 0
+        src = src.replace(
+            f'<p class="total sec" id="total{suf}"><span class="cifra">{sim}</span>—</p>',
+            f'<p class="total sec" id="total{suf}"><span class="cifra">{sim}</span>'
+            f'{nf(tm) if tm is not None else "—"}</p>')
+        src = src.replace(f'<span class="cot" id="cap{suf}"></span>',
+            f'<span class="cot" id="cap{suf}">'
+            + (f'{sim} 1 = R$ {nf(fxm,4)}' if tm is not None else 'sem câmbio')
+            + '</span>')
     if len(ks) > 1:
         ant = ks[-2]
         d = t - total(ant); p = (t/total(ant) - 1) * 100
@@ -140,27 +147,35 @@ def main():
             src = src.replace('<span id="deltaAcum" class="muted"></span>',
                 f'<span id="deltaAcum" class="muted">acumulado desde {rotulo(ks[0])}: R$ {sa}{nf(abs(pa))}%</span>')
 
-        tu_ant, tu_ini = total_usd(ant), total_usd(ks[0])
-        if tu is not None and tu_ant:
-            du = tu - tu_ant; pu = (tu/tu_ant - 1) * 100
-            su = "+" if du >= 0 else "−"
-            cu = "up" if du > 0 else "down" if du < 0 else "flat"
-            src = src.replace('<span id="deltaMesUsd" class="delta flat"></span>',
-                f'<span id="deltaMesUsd" class="delta {cu}">{su}US$ {nf(abs(du))}  ({su}{nf(abs(pu))}%) vs {rotulo(ant)}</span>')
-            if tu_ini and len(ks) > 2:
-                pau = (tu/tu_ini - 1) * 100
-                sau = "+" if pau >= 0 else "−"
-                src = src.replace('<span id="deltaAcumUsd" class="muted"></span>',
-                    f'<span id="deltaAcumUsd" class="muted">US$ {sau}{nf(abs(pau))}%</span>')
-            fx0 = months[ant]["fx"].get("usd") or 0
-            if fx0 > 0 and abs(pu - p) >= 0.05:
-                dif = pu - p
-                pfx = (fxu/fx0 - 1) * 100
+        divergentes = []
+        for m, sim, suf, nome in MOEDAS:
+            tm = total_moeda(ult, m)
+            tm_ant, tm_ini = total_moeda(ant, m), total_moeda(ks[0], m)
+            if tm is None or not tm_ant:
+                continue
+            dm = tm - tm_ant; pm = (tm/tm_ant - 1) * 100
+            sm = "+" if dm >= 0 else "−"
+            cm = "up" if dm > 0 else "down" if dm < 0 else "flat"
+            # sem "vs <data>": a linha do real logo acima já diz contra quem é a
+            # comparação, e repetir estouraria a largura da coluna no celular.
+            src = src.replace(f'<span id="deltaMes{suf}" class="delta flat"></span>',
+                f'<span id="deltaMes{suf}" class="delta {cm}">{sm}{sim} {nf(abs(dm))}  ({sm}{nf(abs(pm))}%)</span>')
+            if tm_ini and len(ks) > 2:
+                pam = (tm/tm_ini - 1) * 100
+                sam = "+" if pam >= 0 else "−"
+                src = src.replace(f'<span id="deltaAcum{suf}" class="muted"></span>',
+                    f'<span id="deltaAcum{suf}" class="muted">{sim} {sam}{nf(abs(pam))}%</span>')
+            fx0 = months[ant]["fx"].get(m) or 0
+            fx1 = months[ult]["fx"].get(m) or 0
+            if fx0 > 0 and abs(pm - p) >= 0.05:
+                pfx = (fx1/fx0 - 1) * 100
                 spfx = "+" if pfx > 0 else "−" if pfx < 0 else ""
-                src = src.replace('<p class="duo-nota" id="duoNota"></p>',
-                    f'<p class="duo-nota" id="duoNota">Dólar <b>{spfx}{nf(abs(pfx))}%</b> desde '
-                    f'{rotulo(ant)} — por isso a leitura em dólares fica <b>{nf(abs(dif))} p.p. '
-                    f'{"acima" if dif > 0 else "abaixo"}</b> da leitura em reais.</p>')
+                divergentes.append(f'{nome} <b>{spfx}{nf(abs(pfx))}%</b>')
+        if divergentes:
+            src = src.replace('<p class="duo-nota" id="duoNota"></p>',
+                f'<p class="duo-nota" id="duoNota">Câmbio desde {rotulo(ant)}: '
+                + ", ".join(divergentes)
+                + '. É o que separa as três leituras.</p>')
 
     fx = months[ult]["fx"]
     brl_tot = sum(months[ult]["vals"].get(a["id"],0) for a in accounts if a["cur"]=="BRL")
