@@ -1,0 +1,9 @@
+# O repositorio sempre guarda LF; o Windows pode ter CRLF na copia de trabalho.
+# Sem isso, cada `python tools/gerar.py` no Windows marcava o HTML inteiro como alterado.
+* text=auto
+
+# Scripts bash precisam de LF ate na copia de trabalho: com CRLF o shebang quebra.
+*.sh text eol=lf
+*.py text eol=lf
+
+*.xlsx binary
