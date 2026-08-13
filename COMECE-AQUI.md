@@ -1,27 +1,15 @@
 # Comece aqui
 
-## Para criar o site (uma vez só)
-
-Abra o Terminal **nesta pasta** e cole:
-
-```bash
-./tools/publicar-primeira-vez.sh
-```
-
-O script faz tudo: entra na sua conta do GitHub, pergunta se o repositório deve ser
-privado ou público, cria o repositório `Investment`, liga o GitHub Pages e publica.
-No fim ele mostra o seu link, que é sempre:
+## O site já está no ar
 
 ```
-https://SEU-USUARIO.github.io/Investment/
+https://gilbertosiebertfilho.github.io/Investimentos/
 ```
 
-Esse link nunca muda. É ele que você envia para as pessoas.
+Esse é o link que você envia para as pessoas. **Ele nunca muda** — sempre mostra o
+último lançamento publicado. Quem já tem o endereço só precisa recarregar a página.
 
-> **Como abrir o Terminal nesta pasta**
-> - **macOS:** clique com o botão direito na pasta → Serviços → Novo Terminal na Pasta
-> - **Windows:** clique com o botão direito dentro da pasta → Abrir no Terminal
-> - Ou, no Claude Code, é só pedir: "rode o publicar-primeira-vez"
+O passo de criação já foi feito (o `publicar-primeira-vez.sh` não é mais necessário).
 
 ## Para atualizar (sempre que lançar saldos novos)
 
@@ -48,13 +36,18 @@ Esse link nunca muda. É ele que você envia para as pessoas.
 Em cerca de um minuto o link já mostra os números novos. Quem tiver o endereço
 só precisa recarregar a página.
 
-## Duas coisas que valem saber
+## O que você precisa saber sobre privacidade
 
-**O link não tem senha.** Quem o receber — ou a quem ele for repassado — vê todos os
-saldos. Se quiser restringir a pessoas específicas, veja a seção final do `PUBLICAR.md`
-(Cloudflare Access, grátis, com login por e-mail autorizado).
+Isto aqui foi uma escolha consciente, não um descuido — mas convém ter em mente:
 
-**Repositório público expõe os saldos no próprio GitHub**, mesmo sem o link do site.
-Por isso o script pergunta e sugere privado. Pages em repositório privado exige plano
-Pro; se preferir não pagar, o `PUBLICAR.md` mostra como usar o Netlify de graça sem
-expor o código.
+**O repositório é público.** Os saldos estão legíveis por qualquer pessoa em
+`github.com/GilbertoSiebertFilho/Investimentos`, sem precisar do link do site. A
+alternativa (repositório privado com Pages) exige plano GitHub Pro, pago.
+
+**O link não tem senha.** Quem o receber — ou a quem ele for repassado — vê os 13
+saldos e o patrimônio total.
+
+Se um dia quiser fechar isso, o caminho é **Cloudflare Pages + Access**: grátis, e a
+única opção que trava de verdade — só entram os e-mails que você autorizar, que
+recebem um código de acesso. Nesse cenário o repositório do GitHub volta a ser
+privado e deixa de expor os números. Veja a seção final do `PUBLICAR.md`.

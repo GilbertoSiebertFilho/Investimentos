@@ -144,17 +144,37 @@ imóveis ficam fora (não variam mês a mês — estão no modelo Excel em `docs
 
 ## Repositório e publicação
 
-Repositório: **Investment** (branch `main`). Já inicializado, com
-`.github/workflows/pages.yml` publicando a pasta `site/` via GitHub Actions a cada
-push. Ligar uma vez em Settings → Pages → Source: GitHub Actions. Ver `PUBLICAR.md`.
+**Estado real (13/08/2026):** publicado em
+`https://github.com/GilbertoSiebertFilho/Investimentos` — branch `main`, repositório
+**PÚBLICO**, Pages ligado em modo GitHub Actions. Link do site:
+
+    https://gilbertosiebertfilho.github.io/Investimentos/
+
+O nome é `Investimentos`, não `Investment` (a pasta local ainda se chama Investment).
+A conta é gratuita, e Pages em repo privado exige plano Pro — o usuário foi informado
+de que os saldos ficam legíveis por qualquer pessoa no GitHub e optou por público
+mesmo assim. **Não reabrir essa discussão a cada mudança**; ela já foi feita com os
+números na mesa. Só avisar de novo se ele pedir para restringir o acesso — aí o
+caminho é Cloudflare Pages + Access (grátis, login por e-mail autorizado), já que o
+link do Pages não tem senha alguma.
+
+`.github/workflows/pages.yml` publica a pasta `site/` a cada push para `main`
+(~1 min por build).
 
 Atualizar tudo (copiar arquivo baixado → regenerar → commit → push):
-`./tools/atualizar-site.sh [arquivo.html]`.
 
-ATENÇÃO ao criar o repo: `site/index.html` contém os saldos reais. Em repositório
-público eles ficam legíveis por qualquer um direto no GitHub, sem sequer abrir o
-site. Sempre confirmar com o usuário antes de tornar público; o padrão sugerido é
-`--private` (Pages privado exige plano pago) ou Netlify/Cloudflare Pages.
+    Windows:      .\tools\atualizar-site.ps1 [arquivo.html]
+    macOS/Linux:  ./tools/atualizar-site.sh  [arquivo.html]
+
+## Armadilhas de Windows (o usuário está no Windows)
+
+- O executável do Python é `python`, **não** `python3`. Os `.sh` chamam `python3` e
+  só funcionam no Git Bash; por isso existe o `.ps1`.
+- `gerar.py` grava com `os.linesep`, ou seja **CRLF** no Windows, enquanto o repo
+  guarda LF. Sem o `.gitattributes` (`* text=auto`) cada regeneração marcava os
+  65 mil bytes do HTML inteiro como alterados. Não remover esse arquivo.
+- `core.fileMode=false` está setado no repo local: o Windows perde o bit de
+  executável dos `.sh` e sem isso todo commit vinha com uma falsa mudança de modo.
 
 ## Publicação por link (alternativas sem GitHub)
 
