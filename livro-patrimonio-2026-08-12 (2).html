@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Livro do patrimônio · 12 ago/26</title>
+<meta name="theme-color" content="#F3F6F1">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2316221B'/%3E%3Ctext x='50' y='71' font-size='58' text-anchor='middle' fill='%23F3F6F1' font-family='monospace' font-weight='bold'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F6F1; --bar:#E1ECDF; --ink:#16221B; --ink-soft:#5B6C60;
+    --rule:#C3D3C1; --rule-soft:#DCE6DA;
+    --up:#2F6F4E; --down:#A14A32; --seal:#8A7A3F;
+    --field:#FFFFFF; --r:5px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 16px 72px}
+
+  .plate{position:relative;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:26px 0 22px;margin-bottom:6px;overflow:hidden;text-align:center}
+  .plate::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.28;
+    background:repeating-linear-gradient(115deg,transparent 0 5px,var(--rule) 5px 5.6px);
+    -webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 62%);mask-image:linear-gradient(to bottom,rgba(0,0,0,.5),transparent 62%)}
+  .plate>*{position:relative}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px}
+  .total{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:clamp(30px,8.4vw,58px);line-height:1.05;letter-spacing:-.025em;margin:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .total .cifra{font-size:.4em;vertical-align:.52em;margin-right:.2em;color:var(--ink-soft);font-weight:500;letter-spacing:.02em}
+  .plate-foot{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;align-items:baseline;margin-top:13px;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  .delta{font-weight:600;font-variant-numeric:tabular-nums}
+  .delta.up{color:var(--up)} .delta.down{color:var(--down)} .delta.flat{color:var(--ink-soft)}
+  .muted{color:var(--ink-soft)}
+  .split{margin-top:10px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px}
+
+  /* --- cabecalho: real grande no centro, moedas estrangeiras lado a lado ---
+     Os dois secundarios cabem lado a lado ATE no iPhone justamente por serem
+     pequenos: "C$ 1.103.460,53" a 16px ocupa ~148px de uma coluna de ~164px.
+     Dois totais GRANDES lado a lado NAO cabiam (o real sozinho ja mede 322px
+     dos 343px uteis num iPhone) -- por isso o real fica sozinho em cima.
+     Nada de white-space:nowrap: .plate tem overflow:hidden, entao um numero
+     largo demais seria CORTADO em silencio em vez de quebrar linha. */
+  .mestre{margin:0}
+  .mestre-var{margin:9px 0 0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.35;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:2px 22px}
+  .rot{letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-right:6px;font-size:.84em}
+  .duo{display:grid;grid-template-columns:1fr 1fr;margin:15px 0 0;
+    padding-top:13px;border-top:1px solid var(--rule)}
+  .duo-col{min-width:0;padding:0 clamp(5px,1.8vw,22px)}
+  .duo-col + .duo-col{border-left:1px solid var(--rule)}
+  /* "em dolar americano" e "em dolar canadense" tem o MESMO numero de letras de
+     proposito: rotulos de comprimento igual quebram na mesma largura, e so assim
+     os dois totais ficam alinhados na horizontal em qualquer tela. Se mudar um
+     rotulo, mude o outro junto -- senao um numero desce e o outro nao. */
+  .duo-cap{margin:0 0 3px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);line-height:1.35}
+  .duo-cap .cot{display:block;letter-spacing:.02em;text-transform:none;font-size:10px;
+    opacity:.75;font-variant-numeric:tabular-nums}
+  /* min 13px, nao 16: num iPhone SE de 320px a coluna tem ~139px e
+     "C$ 1.103.460,53" a 16px mede 157px -- estouraria. */
+  .total.sec{font-size:clamp(13px,4.4vw,30px)}
+  /* min 9px: em 320px a coluna tem 144px e a linha "MÊS +US$ 37.954,05 +5,07%"
+     precisa caber. Se nao couber ela QUEBRA (nao ha nowrap), o que e' feio mas
+     nunca corta numero -- .plate tem overflow:hidden. */
+  .duo-var{margin:5px 0 0;font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(9px,2.6vw,11.5px);line-height:1.3}
+  .duo-var + .duo-var{margin-top:2px}
+  .duo-col.sem-fx{opacity:.45}   /* cambio daquela moeda em branco: esmaece, nao some */
+  .duo-nota{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--rule);
+    font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.45;color:var(--ink-soft)}
+  .duo-nota:empty{display:none}
+  .duo-nota b{font-weight:600}
+
+  section{margin-top:34px}
+  h2{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);font-weight:500;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  h2 .sub{letter-spacing:.06em;text-transform:none;font-size:11px}
+
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+  label.fld{display:flex;flex-direction:column;gap:5px}
+  label.fld .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  input,select,button{font:inherit;color:var(--ink)}
+  input[type=month],input[type=date],input[type=text],select{background:var(--field);border:1px solid var(--rule);border-radius:var(--r);padding:9px 11px;min-width:0}
+  input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+
+  .fxbar{border:1px solid var(--ink);border-bottom:0;border-radius:var(--r) var(--r) 0 0;background:var(--bar);padding:14px 12px 12px}
+  .fxbar .hd{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);margin-bottom:10px}
+  .fxgrid{display:flex;flex-wrap:wrap;gap:14px}
+  .fxcell-form{display:flex;flex-direction:column;gap:4px}
+  .fxcell-form .cap{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .fxcell-form input{width:132px;font-family:"IBM Plex Mono",monospace;text-align:right;font-size:15px;font-weight:500;padding:9px 11px;border:1px solid var(--ink);background:var(--field)}
+  .fxcell-form .hintline{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);min-height:15px}
+  .fxauto{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:12px;padding-top:11px;border-top:1px solid var(--rule)}
+  .fxstatus{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);flex:1;min-width:180px}
+  .fxstatus b{color:var(--ink);font-weight:600}
+  .fxstatus.erro{color:var(--down)}
+  .chk{display:flex;align-items:center;gap:6px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);cursor:pointer}
+  .chk input{accent-color:var(--ink);width:14px;height:14px}
+  .share{border:1px solid var(--ink);border-radius:var(--r);background:var(--field);padding:14px 14px 12px;margin-top:18px}
+  .share .st{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+  .share .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-soft);flex:none}
+  .share.on .dot{background:var(--up)}
+  .share.ro{background:var(--bar)}
+  .share .lbl{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+  .share .det{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-soft);width:100%;margin-top:2px}
+  .share .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .aviso{font-size:12px;color:var(--ink-soft);line-height:1.55;margin-top:10px;padding-top:9px;border-top:1px solid var(--rule-soft)}
+  .aviso b{color:var(--down)}
+  .codigo{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.16em;background:var(--bar);border:1px dashed var(--ink);border-radius:3px;padding:2px 8px}
+  @keyframes pulsa{0%,100%{opacity:.35}50%{opacity:1}}
+  .buscando{animation:pulsa 1.1s ease-in-out infinite}
+
+  .btn{background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:var(--r);padding:10px 18px;cursor:pointer;font-size:14px;font-weight:500;transition:opacity .15s ease}
+  .btn:hover{opacity:.85}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  .btn.ghost:hover{border-color:var(--ink);opacity:1}
+  .btn.small{padding:6px 12px;font-size:12.5px}
+  .btn.danger{color:var(--down);border-color:var(--rule)}
+
+  .seg{display:inline-flex;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--field)}
+  .seg button{background:transparent;border:0;padding:6px 12px;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-soft)}
+  .seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+
+  .entries{display:grid;grid-template-columns:1fr;border:1px solid var(--rule);overflow:hidden}
+  .erow{display:grid;grid-template-columns:1fr 150px;align-items:center;gap:10px;padding:9px 12px;background:var(--field)}
+  .erow:nth-child(even){background:var(--bar)}
+  .erow .nm{font-size:14px;min-width:0}
+  .cur{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;border:1px solid var(--rule);border-radius:3px;padding:1px 4px;margin-left:6px;color:var(--ink-soft);font-style:normal;vertical-align:1px}
+  .erow input{font-family:"IBM Plex Mono",monospace;text-align:right;width:100%;padding:7px 9px;font-size:13.5px;background:var(--field)}
+  .erow:nth-child(even) input{background:rgba(255,255,255,.72)}
+  .erow .prev{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-soft);grid-column:1/-1;text-align:right;margin-top:-2px}
+  .erow .conv{color:var(--up)}
+  .sum-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px;border:1px solid var(--ink);border-top-width:2px;background:var(--paper);font-family:"IBM Plex Mono",monospace}
+  .sum-line .v{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+  .sum-line .k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+
+  .chart-box{border:1px solid var(--rule);border-radius:var(--r);background:var(--field);padding:14px 12px 8px}
+  svg{display:block;width:100%;height:auto}
+  .empty{border:1px dashed var(--rule);border-radius:var(--r);padding:26px 18px;color:var(--ink-soft);font-size:14px;background:var(--field)}
+  .empty strong{color:var(--ink);font-weight:600;display:block;margin-bottom:4px}
+
+  .scroller{overflow-x:auto;border:1px solid var(--rule);border-radius:var(--r);-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+  th,td{padding:8px 12px;white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+  thead th{background:var(--ink);color:var(--paper);font-weight:500;font-size:10px;letter-spacing:.12em;text-transform:uppercase;position:sticky;top:0}
+  th.mes,td.mes{text-align:left;position:sticky;left:0;z-index:2;box-shadow:1px 0 0 var(--rule)}
+  thead th.mes{z-index:3;box-shadow:1px 0 0 var(--ink)}
+  tbody tr{background:var(--field)}
+  tbody tr:nth-child(odd){background:var(--bar)}
+  tbody tr:nth-child(odd) td.mes{background:var(--bar)}
+  tbody tr:nth-child(even) td.mes{background:var(--field)}
+  tbody tr[data-k]{cursor:pointer}
+  tbody tr.sel{outline:2px solid var(--seal);outline-offset:-2px}
+  tbody tr.tot-row{background:var(--paper);border-top:2px solid var(--ink)}
+  tbody tr.tot-row td{font-weight:600}
+  td.tot,th.tot{font-weight:600;border-left:1px solid var(--rule)}
+  .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--ink-soft)}
+  td.act{text-align:center}
+  .lnk{background:none;border:0;padding:2px 6px;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px}
+  .lnk:hover{color:var(--ink)} .lnk.rm:hover{color:var(--down)}
+  td.fxtd{background:rgba(138,122,63,.09)}
+  input.fxinline{
+    width:82px;font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;
+    padding:3px 5px;border:0;border-bottom:1px dashed var(--seal);border-radius:0;
+    background:transparent;color:var(--ink);
+  }
+  input.fxinline:hover{background:rgba(255,255,255,.6)}
+  input.datainline{width:104px;font-family:"IBM Plex Mono",monospace;font-size:12px;padding:3px 5px;border:0;border-bottom:1px dashed var(--seal);border-radius:0;background:transparent}
+
+  .acct{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--rule-soft);flex-wrap:wrap}
+  .acct input{flex:1;min-width:150px;padding:7px 10px;font-size:14px}
+  .acct select{padding:7px 8px;font-family:"IBM Plex Mono",monospace;font-size:12px}
+  .foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-soft);line-height:1.65}
+  .row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(22,34,27,.42)}
+  .modal[hidden]{display:none}
+  .modal .card{background:var(--paper);border:2px solid var(--ink);border-radius:var(--r);max-width:420px;width:100%;padding:20px 18px 16px;box-shadow:0 14px 40px rgba(22,34,27,.3)}
+  .modal p{margin:0 0 14px;font-size:14.5px;line-height:1.5}
+  .modal input{width:100%;padding:10px 12px;border:1px solid var(--ink);border-radius:var(--r);background:var(--field);font-family:"IBM Plex Mono",monospace;font-size:15px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+  .modal input[hidden]{display:none}
+  .modal .acts{display:flex;gap:8px;justify-content:flex-end}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(140%);background:var(--ink);color:var(--paper);padding:11px 20px;border-radius:var(--r);font-size:13.5px;box-shadow:0 6px 24px rgba(22,34,27,.22);transition:transform .28s cubic-bezier(.2,.8,.3,1);z-index:50;max-width:90vw;text-align:center}
+  .toast.on{transform:translateX(-50%) translateY(0)}
+  .olho{position:absolute;top:24px;right:0;background:transparent;border:1px solid var(--rule);border-radius:var(--r);padding:5px 11px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer}
+  .olho:hover{border-color:var(--ink);color:var(--ink)}
+  body.privado :is(.total,#deltaMes,#deltaAno,#deltaAcum,#deltaMesUsd,#deltaAnoUsd,#deltaAcumUsd,#deltaMesCad,#deltaAnoCad,#deltaAcumCad,#duoNota,#split,#efeitos,.sum-line .v,.erow input,.erow .prev,.chart-box svg,.fxcell-form input,.hintline){filter:blur(8px)}
+  body.privado td:not(.mes){filter:blur(6px)}
+  @media print{
+    @page{size:A4 landscape;margin:12mm}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    #secLancar,#secContas,.share,.row-actions,.seg,.olho,td.act,.lnk,#dicaLedger,.toast,.modal,.fxauto{display:none!important}
+    section{margin-top:20px;break-inside:avoid}
+    .plate{border-color:#000}
+    .duo{grid-template-columns:1fr 1fr;border-top-color:#999}
+    .duo-col{padding:0 26px}
+    .duo-col + .duo-col{border-left-color:#999}
+    .total{font-size:34px} .total.sec{font-size:21px}
+    .duo-var{font-size:11px}
+    .duo-nota{color:#000;border-top-color:#999}
+    .scroller{overflow:visible;border-color:#999}
+    table{font-size:9.5px}
+    th,td{padding:4px 7px}
+    thead th{position:static;background:#16221B!important;color:#fff!important}
+    th.mes,td.mes{position:static;box-shadow:none}
+    svg{max-height:170px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:560px){
+    .erow{grid-template-columns:1fr 116px;gap:8px}
+    .erow .nm{font-size:13px}
+    th,td{padding:7px 9px;font-size:11.5px}
+    .fxcell-form input{width:120px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <noscript>
+    <p style="border:1px solid #A14A32;color:#A14A32;border-radius:5px;padding:12px;margin:0 0 16px;font-size:13px">
+      Este visualizador está aberto num modo que não executa scripts — provavelmente a pré-visualização do app Arquivos.
+      Os números abaixo estão corretos, mas os botões não respondem. Para usar a página inteira, abra o arquivo num navegador.
+    </p>
+  </noscript>
+
+  <header class="plate">
+    <button class="olho" id="olho" aria-pressed="false">ocultar valores</button>
+    <p class="eyebrow">Livro do patrimônio · contas da coluna A</p>
+
+    <div class="mestre">
+      <p class="total" id="totalNow"><span class="cifra">R$</span>4.017.619,36</p>
+      <p class="mestre-var">
+        <span class="rend"><span class="rot">no mês</span><span id="deltaMes" class="delta up" title="desde 01 jul/26">+R$ 126.094,39  +3,24%</span></span>
+        <span class="rend"><span class="rot">no ano</span><span id="deltaAno" class="delta up" title="desde 01 jul/26">+R$ 126.094,39  +3,24%</span></span>
+      </p>
+    </div>
+
+    <div class="duo" id="duo">
+      <div class="duo-col">
+        <p class="duo-cap">em dólar americano<span class="cot" id="capUsd">US$ 1 = R$ 5,1049</span></p>
+        <p class="total sec" id="totalUsd"><span class="cifra">US$</span>787.012,35</p>
+        <p class="duo-var"><span class="rot">mês</span><span id="deltaMesUsd" class="delta up" title="desde 01 jul/26">+US$ 38.642,17  +5,16%</span></p>
+        <p class="duo-var"><span class="rot">ano</span><span id="deltaAnoUsd" class="delta up" title="desde 01 jul/26">+US$ 38.642,17  +5,16%</span></p>
+      </div>
+      <div class="duo-col">
+        <p class="duo-cap">em dólar canadense<span class="cot" id="capCad">C$ 1 = R$ 3,6864</span></p>
+        <p class="total sec" id="totalCad"><span class="cifra">C$</span>1.089.849,00</p>
+        <p class="duo-var"><span class="rot">mês</span><span id="deltaMesCad" class="delta up" title="desde 01 jul/26">+C$ 23.677,78  +2,22%</span></p>
+        <p class="duo-var"><span class="rot">ano</span><span id="deltaAnoCad" class="delta up" title="desde 01 jul/26">+C$ 23.677,78  +2,22%</span></p>
+      </div>
+    </div>
+
+    <p class="duo-nota" id="duoNota">Câmbio desde 01 jul/26: dólar <b>−1,83%</b>, canadense <b>+1,00%</b>. É o que separa as três leituras.</p>
+    <div class="plate-foot">
+      <span id="mesRef" class="muted">12 ago/26</span>
+      <span id="deltaAcum" class="muted"></span>
+      <span id="deltaAcumUsd" class="muted"></span>
+      <span id="deltaAcumCad" class="muted"></span>
+    </div>
+    <div class="split" id="split"><span>R$ 3.069.136,15 em reais</span><span>C$ 134.192,66 × 3,6864 = R$ 494.687,82</span><span>US$ 88.894,08 × 5,1049 = R$ 453.795,39</span></div>
+    <div class="split" id="efeitos"><span>Δ por saldo: <b class="up">+R$ 129.663,60</b></span><span>Δ por câmbio: <b class="down">−R$ 3.569,21</b></span></div>
+  </header>
+
+  <div class="share on" id="sharePanel">
+    <div class="st">
+      <span class="dot"></span>
+      <span class="lbl" id="shareLbl">Salvo neste aparelho</span>
+      <span class="det" id="shareDet">Última atualização · 02/09/2026 às 20h08 · <b style="color:var(--up)">seus lançamentos ficam guardados ao sair e voltar</b></span>
+    </div>
+    <div class="acts" id="shareActs"></div>
+    <p class="aviso" id="shareAviso">Tudo certo por aqui — pode fechar e voltar que os lançamentos continuam. O arquivo em disco ainda não os contém: baixe quando for enviar ou publicar (é ele que os outros veem).</p>
+  </div>
+
+  <section id="secLancar" style="display: none;">
+    <h2>Lançar saldos <span class="sub" id="formHint">editando o lançamento de 12 ago/26</span></h2>
+    <div class="bar">
+      <label class="fld"><span class="cap">Data do lançamento</span><input type="date" id="mesInput"></label>
+      <label class="fld"><span class="cap">Datas gravadas</span><select id="baseSel"><option value="">— escolher —</option><option value="2026-08-12">12 ago/26</option><option value="2026-08-03">03 ago/26</option><option value="2026-07-01">01 jul/26</option></select></label>
+    </div>
+
+    <div class="fxbar">
+      <p class="hd">Câmbio deste lançamento — buscado hoje, editável sempre</p>
+      <div class="fxgrid">
+        <div class="fxcell-form">
+          <span class="cap">CAD → BRL</span>
+          <input type="text" inputmode="decimal" id="fxCad" placeholder="3,6500" aria-label="Câmbio do dólar canadense em reais">
+          <span class="hintline" id="hintCad">03 ago/26: 3,6200  <span class="up">+1,83%</span></span>
+        </div>
+        <div class="fxcell-form">
+          <span class="cap">USD → BRL</span>
+          <input type="text" inputmode="decimal" id="fxUsd" placeholder="5,2000" aria-label="Câmbio do dólar americano em reais">
+          <span class="hintline" id="hintUsd">03 ago/26: 5,0800  <span class="up">+0,49%</span></span>
+        </div>
+      </div>
+      <div class="fxauto">
+        <button class="btn ghost small" id="buscarFx">Buscar cotação de hoje</button>
+        <span class="fxstatus" id="fxStatus"></span>
+        <label class="chk"><input type="checkbox" id="autoFx"> buscar ao abrir</label>
+      </div>
+    </div>
+
+    <div class="entries" id="entries"></div>
+    <div class="sum-line">
+      <span class="k">Total do lançamento em reais</span>
+      <span class="v" id="formTotal">R$ 4.017.619,36</span>
+    </div>
+    <div class="row-actions">
+      <button class="btn" id="salvar">Salvar lançamento</button>
+      <button class="btn ghost" id="limpar">Zerar campos</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Evolução em reais <span class="sub" id="chartHint">3 meses</span></h2>
+    <div id="chartWrap"><div class="chart-box"><svg viewBox="0 0 720 260" role="img" aria-label="Evolução do total em reais"><line x1="8" x2="712" y1="230.0" y2="230.0" stroke="var(--rule-soft)" stroke-width="1"></line><text x="10" y="225.0" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">R$ 3,87 mi</text><line x1="8" x2="712" y1="159.3" y2="159.3" stroke="var(--rule-soft)" stroke-width="1"></line><text x="10" y="154.3" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">R$ 3,93 mi</text><line x1="8" x2="712" y1="88.7" y2="88.7" stroke="var(--rule-soft)" stroke-width="1"></line><text x="10" y="83.7" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">R$ 3,98 mi</text><line x1="8" x2="712" y1="18.0" y2="18.0" stroke="var(--rule-soft)" stroke-width="1"></line><text x="10" y="13.0" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">R$ 4,04 mi</text><path d="M8.0,230 L8.0,201.9 L360.0,74.6 L712.0,46.1 L712.0,230 Z" fill="var(--up)" opacity=".08"></path><polyline points="8.0,201.9 360.0,74.6 712.0,46.1" fill="none" stroke="var(--up)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline><circle cx="8.0" cy="201.9" r="2.6" fill="var(--up)"><title>01 jul/26 — R$ 3.891.524,97</title></circle><circle cx="360.0" cy="74.6" r="2.6" fill="var(--up)"><title>03 ago/26 — R$ 3.994.527,12</title></circle><circle cx="712.0" cy="46.1" r="4.6" fill="var(--seal)"><title>12 ago/26 — R$ 4.017.619,36</title></circle><text x="8.0" y="250" font-size="10" fill="var(--ink-soft)" text-anchor="middle" font-family="IBM Plex Mono, monospace">01 jul/26</text><text x="360.0" y="250" font-size="10" fill="var(--ink-soft)" text-anchor="middle" font-family="IBM Plex Mono, monospace">03 ago/26</text><text x="712.0" y="250" font-size="10" fill="var(--ink-soft)" text-anchor="middle" font-family="IBM Plex Mono, monospace">12 ago/26</text></svg></div></div>
+  </section>
+
+  <section>
+    <h2>Variação por conta <span class="sub" id="varHint">12 ago/26 vs 03 ago/26</span></h2>
+    <div id="varWrap"><div class="scroller"><table><thead><tr><th class="mes">Conta</th><th>Saldo</th><th class="tot">Em R$</th><th>Δ% na moeda</th><th>Δ% em R$</th><th>Δ% acum. R$</th></tr></thead><tbody><tr><td class="mes">Sicoob – aplicação fixa</td><td>R$ 226.817,79</td><td class="tot">226.817,79</td><td class="up"><span class="flat">=</span></td><td class="up">+1,15%</td><td class="up">+2,39%</td></tr><tr><td class="mes">Sicoob – conta corrente</td><td>R$ 637,00</td><td class="tot">637,00</td><td class="down"><span class="flat">=</span></td><td class="down">−80,10%</td><td class="down">−30,35%</td></tr><tr><td class="mes">BTG</td><td>R$ 1.256.113,42</td><td class="tot">1.256.113,42</td><td class="down"><span class="flat">=</span></td><td class="down">−2,74%</td><td class="down">−0,91%</td></tr><tr><td class="mes">Bradesco</td><td>R$ 26,63</td><td class="tot">26,63</td><td class="down"><span class="flat">=</span></td><td class="down">−87,54%</td><td class="down">−77,66%</td></tr><tr><td class="mes">XP</td><td>R$ 23.594,86</td><td class="tot">23.594,86</td><td class="up"><span class="flat">=</span></td><td class="up">+1,23%</td><td class="up">+2,47%</td></tr><tr><td class="mes">Wise</td><td>R$ 0,36</td><td class="tot">0,36</td><td class="flat"><span class="flat">=</span></td><td class="flat">0,00%</td><td class="flat">0,00%</td></tr><tr><td class="mes">RBC <em class="cur">CAD</em></td><td>C$ 19,99</td><td class="tot">73,69</td><td class="down">−80,58%</td><td class="down">−80,22%</td><td class="down">−42,13%</td></tr><tr><td class="mes">Wealthsimple – Gilberto + Karoline <em class="cur">CAD</em></td><td>C$ 132.545,68</td><td class="tot">488.616,39</td><td class="down">−4,75%</td><td class="down">−3,00%</td><td class="down">−2,59%</td></tr><tr><td class="mes">NEO – Gilberto <em class="cur">CAD</em></td><td>C$ 3,43</td><td class="tot">12,64</td><td class="flat">0,00%</td><td class="up">+1,83%</td><td class="up">+1,00%</td></tr><tr><td class="mes">NEO – Karoline <em class="cur">CAD</em></td><td>C$ 23,56</td><td class="tot">86,85</td><td class="flat">0,00%</td><td class="up">+1,83%</td><td class="up">+3,46%</td></tr><tr><td class="mes">Depósito casa <em class="cur">CAD</em></td><td>C$ 1.600,00</td><td class="tot">5.898,24</td><td class="flat">0,00%</td><td class="up">+1,83%</td><td class="up">+1,00%</td></tr><tr><td class="mes">Avenue <em class="cur">USD</em></td><td>US$ 88.894,08</td><td class="tot">453.795,39</td><td class="up">+1,66%</td><td class="up">+2,16%</td><td class="up">+0,64%</td></tr><tr><td class="mes">Conta Rio Fortuna</td><td>R$ 1.561.946,09</td><td class="tot">1.561.946,09</td><td class="up"><span class="flat">=</span></td><td class="up">+4,28%</td><td class="up">+10,02%</td></tr><tr class="tot-row"><td class="mes">TOTAL</td><td></td><td class="tot">4.017.619,36</td><td></td><td class="up">+0,58%</td><td class="up">+3,24%</td></tr><tr><td class="mes flat">Câmbio CAD</td><td>3,6864</td><td class="tot flat">—</td><td></td><td class="up">+1,83%</td><td></td></tr><tr><td class="mes flat">Câmbio USD</td><td>5,1049</td><td class="tot flat">—</td><td></td><td class="up">+0,49%</td><td></td></tr></tbody></table></div></div>
+  </section>
+
+  <section>
+    <h2>
+      Livro razão
+      <span class="seg" id="modo">
+        <button data-modo="brl" aria-pressed="true">em reais</button>
+        <button data-modo="orig" aria-pressed="false">moeda original</button>
+        <button data-modo="pct" aria-pressed="false">variação %</button>
+      </span>
+    </h2>
+    <p class="muted" style="font-family:'IBM Plex Mono',monospace;font-size:11px;margin:0 0 10px">
+      <span id="dicaLedger">As colunas de data e de câmbio são editáveis aqui mesmo — corrija e tudo recalcula.</span>
+    </p>
+    <div id="ledgerWrap"><div class="scroller"><table><thead><tr><th class="mes">Lançamento</th><th>Data</th><th class="tot">Total R$</th><th>Δ R$</th><th>Δ%</th><th>CAD</th><th>USD</th><th>Sicoob – aplicação fixa</th><th>Sicoob – conta corrente</th><th>BTG</th><th>Bradesco</th><th>XP</th><th>Wise</th><th>RBC (CAD)</th><th>Wealthsimple – Gilberto + Karoline (CAD)</th><th>NEO – Gilberto (CAD)</th><th>NEO – Karoline (CAD)</th><th>Depósito casa (CAD)</th><th>Avenue (USD)</th><th>Conta Rio Fortuna</th><th></th></tr></thead><tbody><tr><td class="mes">12 ago/26</td><td>12/08/2026</td><td class="tot">4.017.619,36</td><td class="up">+23.092,24</td><td class="up">+0,58%</td><td class="fxtd">3,6864</td><td class="fxtd">5,1049</td><td>226.817,79</td><td>637,00</td><td>1.256.113,42</td><td>26,63</td><td>23.594,86</td><td>0,36</td><td>73,69</td><td>488.616,39</td><td>12,64</td><td>86,85</td><td>5.898,24</td><td>453.795,39</td><td>1.561.946,09</td><td class="act"></td></tr><tr><td class="mes">03 ago/26</td><td>03/08/2026</td><td class="tot">3.994.527,12</td><td class="up">+103.002,15</td><td class="up">+2,65%</td><td class="fxtd">3,6200</td><td class="fxtd">5,0800</td><td>224.234,62</td><td>3.201,52</td><td>1.291.485,31</td><td>213,67</td><td>23.309,21</td><td>0,36</td><td>372,64</td><td>503.718,76</td><td>12,42</td><td>85,29</td><td>5.792,00</td><td>444.216,08</td><td>1.497.885,24</td><td class="act"></td></tr><tr><td class="mes">01 jul/26</td><td>01/07/2026</td><td class="tot">3.891.524,97</td><td class="flat">—</td><td class="flat">—</td><td class="fxtd">3,6500</td><td class="fxtd">5,2000</td><td>221.531,06</td><td>914,52</td><td>1.267.614,87</td><td>119,20</td><td>23.026,92</td><td>0,36</td><td>127,35</td><td>501.582,56</td><td>12,52</td><td>83,95</td><td>5.840,00</td><td>450.925,64</td><td>1.419.746,02</td><td class="act"></td></tr></tbody></table></div></div>
+    <div class="row-actions">
+      <button class="btn ghost small" id="csv">Baixar CSV</button>
+      <button class="btn ghost small danger" id="apagarTudo" style="display: none;">Restaurar dados iniciais</button>
+    </div>
+  </section>
+
+  <section id="secContas" style="display: none;">
+    <h2>Contas <span class="sub">nome, moeda, adicionar ou remover</span></h2>
+    <div id="accts"></div>
+    <div class="row-actions"><button class="btn ghost small" id="addAcct">Adicionar conta</button></div>
+  </section>
+
+  <p class="foot">
+    Só entram aqui as contas da coluna A — os ativos líquidos. Lance quando quiser: uma vez por mês
+    ou vários dias no mesmo mês; cada lançamento guarda a própria data e o próprio câmbio.<br>
+    Para gerar um PDF, use o imprimir do navegador: a página sai limpa, sem formulários nem botões.
+  </p>
+</div>
+
+<div class="modal" id="modal" hidden="">
+  <div class="card" role="dialog" aria-modal="true">
+    <p id="modalMsg"></p>
+    <input type="text" id="modalInput" hidden="" autocomplete="off">
+    <div class="acts">
+      <button class="btn ghost small" id="modalNao">Cancelar</button>
+      <button class="btn small" id="modalSim">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">12 ago/26 salvo · R$ 4.017.619,36 — guardado neste aparelho</div>
+
+<script>
+const KEY = "patrimonio-coluna-a-v3";
+const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const FX_PADRAO = { cad: 3.62, usd: 5.08 };
+
+/* contas da coluna A, na ordem da planilha */
+const SEED = [
+  ["Sicoob – aplicação fixa","BRL"],
+  ["Sicoob – conta corrente","BRL"],
+  ["BTG","BRL"],
+  ["Bradesco","BRL"],
+  ["XP","BRL"],
+  ["Wise","BRL"],
+  ["RBC","CAD"],
+  ["Wealthsimple – Gilberto + Karoline","CAD"],
+  ["NEO – Gilberto","CAD"],
+  ["NEO – Karoline","CAD"],
+  ["Depósito casa","CAD"],
+  ["Avenue","USD"],
+  ["Conta Rio Fortuna","BRL"]
+];
+
+/* saldos na moeda de cada conta, na mesma ordem acima */
+const SEED_MESES = {
+  "2026-07-01": { data:"2026-07-01", fx:{cad:3.65, usd:5.20}, vals:[
+    221531.06, 914.52, 1267614.87, 119.20, 23026.92, 0.36,
+    34.89, 137419.88, 3.43, 23.00, 1600.00, 86716.47, 1419746.02 ]},
+  "2026-08-03": { data:"2026-08-03", fx:{cad:3.62, usd:5.08}, vals:[
+    224234.62, 3201.52, 1291485.31, 213.67, 23309.21, 0.36,
+    102.94, 139148.83, 3.43, 23.56, 1600.00, 87444.11, 1497885.24 ]}
+};
+
+/* Preenchido automaticamente quando a página é exportada para enviar a alguém.
+   Em branco = página viva, ligada ao armazenamento. */
+const DADOS_EMBUTIDOS = /*DADOS_INICIO*/{"dados":{"accounts":[{"id":"c01","name":"Sicoob – aplicação fixa","cur":"BRL"},{"id":"c02","name":"Sicoob – conta corrente","cur":"BRL"},{"id":"c03","name":"BTG","cur":"BRL"},{"id":"c04","name":"Bradesco","cur":"BRL"},{"id":"c05","name":"XP","cur":"BRL"},{"id":"c06","name":"Wise","cur":"BRL"},{"id":"c07","name":"RBC","cur":"CAD"},{"id":"c08","name":"Wealthsimple – Gilberto + Karoline","cur":"CAD"},{"id":"c09","name":"NEO – Gilberto","cur":"CAD"},{"id":"c10","name":"NEO – Karoline","cur":"CAD"},{"id":"c11","name":"Depósito casa","cur":"CAD"},{"id":"c12","name":"Avenue","cur":"USD"},{"id":"c13","name":"Conta Rio Fortuna","cur":"BRL"}],"months":{"2026-07-01":{"data":"2026-07-01","fx":{"cad":3.65,"usd":5.2},"vals":{"c01":221531.06,"c02":914.52,"c03":1267614.87,"c04":119.2,"c05":23026.92,"c06":0.36,"c07":34.89,"c08":137419.88,"c09":3.43,"c10":23,"c11":1600,"c12":86716.47,"c13":1419746.02}},"2026-08-03":{"data":"2026-08-03","fx":{"cad":3.62,"usd":5.08},"vals":{"c01":224234.62,"c02":3201.52,"c03":1291485.31,"c04":213.67,"c05":23309.21,"c06":0.36,"c07":102.94,"c08":139148.83,"c09":3.43,"c10":23.56,"c11":1600,"c12":87444.11,"c13":1497885.24}},"2026-08-12":{"data":"2026-08-12","fx":{"cad":3.6864,"usd":5.1049},"vals":{"c01":226817.79,"c02":637,"c03":1256113.42,"c04":26.63,"c05":23594.86,"c06":0.36,"c07":19.99,"c08":132545.68,"c09":3.43,"c10":23.56,"c11":1600,"c12":88894.08,"c13":1561946.09}}},"autoFx":true},"atualizadoEm":"2026-09-03T02:08:39.520Z"}/*DADOS_FIM*/;
+
+let state = { accounts: [], months: {} };
+let memoryOnly = false, modo = "brl";
+let atualizadoEm = null, modoArquivo = false, selecionado = null;
+let persistiuLocal = false, temLocalStorage = false;
+const LS_KEY = "livro-patrimonio-local-v1";
+function gravarLocal(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify({ dados: state, atualizadoEm }));
+    temLocalStorage = true;
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ---------- formatação ---------- */
+const nf = (n,d=2) => (n||0).toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const brl = n => "R$ " + nf(n);
+const simbolo = c => c === "CAD" ? "C$" : c === "USD" ? "US$" : "R$";
+const fmtCur = (n,c) => simbolo(c) + " " + nf(n);
+const brlShort = n => {
+  const a = Math.abs(n);
+  if (a >= 1e6) return "R$ " + (n/1e6).toLocaleString("pt-BR",{maximumFractionDigits:2}) + " mi";
+  if (a >= 1e3) return "R$ " + (n/1e3).toLocaleString("pt-BR",{maximumFractionDigits:0}) + " mil";
+  return brl(n);
+};
+const rotulo = k => { const [y,m,d] = k.split("-"); return (d ? d + " " : "") + MESES[+m-1] + "/" + y.slice(2); };
+const ultimoDia = k => { const [y,m] = k.split("-").map(Number); return k + "-" + String(new Date(y, m, 0).getDate()).padStart(2,"0"); };
+const dataBR = iso => { if (!iso) return "—"; const [y,m,d] = iso.split("-"); return d+"/"+m+"/"+y; };
+const uid = () => "c" + Math.random().toString(36).slice(2,9);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function parseNum(txt){
+  if (txt === null || txt === undefined) return 0;
+  let s = String(txt).replace(/[^\d,.\-]/g,"").trim();
+  if (!s) return 0;
+  const temV = s.includes(","), temP = s.includes(".");
+  if (temV && temP) s = s.lastIndexOf(",") > s.lastIndexOf(".") ? s.replace(/\./g,"").replace(",",".") : s.replace(/,/g,"");
+  else if (temV) s = s.replace(/\./g,"").replace(",",".");
+  else if (temP && /\.\d{3}(\D|$)/.test(s) && !/\.\d{1,2}$/.test(s)) s = s.replace(/\./g,"");
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function dialogo(msg, opts){
+  opts = opts || {};
+  return new Promise(res => {
+    const m = document.getElementById("modal");
+    const i = document.getElementById("modalInput");
+    const sim = document.getElementById("modalSim"), nao = document.getElementById("modalNao");
+    document.getElementById("modalMsg").textContent = msg;
+    i.hidden = !opts.input;
+    if (opts.input){ i.value = ""; i.placeholder = opts.ph || ""; }
+    sim.textContent = opts.ok || "Confirmar";
+    m.hidden = false;
+    setTimeout(() => (opts.input ? i : sim).focus(), 40);
+    const fim = v => { m.hidden = true; sim.onclick = null; nao.onclick = null; i.onkeydown = null; res(v); };
+    sim.onclick = () => fim(opts.input ? (i.value.trim() || null) : true);
+    nao.onclick = () => fim(opts.input ? null : false);
+    i.onkeydown = e => { if (e.key === "Enter") sim.onclick(); };
+  });
+}
+const confirmar = msg => dialogo(msg);
+const perguntar = (msg, ph) => dialogo(msg, { input:true, ok:"Entrar", ph });
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("on"), 3200);
+}
+
+/* ---------- dados derivados ---------- */
+const chaves = () => Object.keys(state.months).sort();
+const fxDe = k => (state.months[k] && state.months[k].fx) || FX_PADRAO;
+const dataDe = k => (state.months[k] && state.months[k].data) || k;
+const taxa = (k,cur) => cur === "CAD" ? (fxDe(k).cad || 0) : cur === "USD" ? (fxDe(k).usd || 0) : 1;
+const nativo = (k,a) => state.months[k]?.vals?.[a.id];
+const emReais = (k,a) => (nativo(k,a) || 0) * taxa(k,a.cur);
+const totalDe = k => state.accounts.reduce((s,a)=> s + emReais(k,a), 0);
+/* O total lido numa moeda estrangeira. Converte SEMPRE com o cambio DAQUELE
+   lancamento -- usar a cotacao de outro dia inventaria variacao que nunca
+   existiu. Devolve null quando o lancamento nao tem aquele cambio, para o
+   cabecalho mostrar "—" em vez de dividir por zero e imprimir Infinity. */
+const totalEmMoeda = (k,cur) => { const r = taxa(k,cur); return r > 0 ? totalDe(k) / r : null; };
+/* Base de comparacao de "no mes" / "no ano": o ultimo lancamento ANTERIOR ao
+   inicio do periodo -- e' o saldo com que o periodo comecou. Quando o livro
+   comeca DENTRO do periodo (nao existe nada antes), cai para o primeiro
+   lancamento do proprio periodo; assim o "no ano" de um livro iniciado em
+   julho mede desde julho em vez de sumir. Devolve null se nao ha com o que
+   comparar (o foco e' o primeiro lancamento de todos). */
+function baseDoPeriodo(foco, inicio){
+  const ks = chaves();
+  const antes = ks.filter(k => k < inicio);
+  if (antes.length) return antes[antes.length - 1];
+  const dentro = ks.filter(k => k >= inicio && k < foco);
+  return dentro.length ? dentro[0] : null;
+}
+const inicioMes = k => k.slice(0,7) + "-01";
+const inicioAno = k => k.slice(0,4) + "-01-01";
+const totalMoeda = (k,cur) => state.accounts.filter(a=>a.cur===cur).reduce((s,a)=> s + (nativo(k,a)||0), 0);
+const varPct = (novo,velho) => (velho === 0 || velho === undefined || velho === null || !isFinite(velho)) ? null : (novo - velho) / velho * 100;
+const pctTxt = p => p === null ? "—" : (p > 0 ? "+" : p < 0 ? "−" : "") + nf(Math.abs(p),2) + "%";
+const cls = v => v > 0 ? "up" : v < 0 ? "down" : "flat";
+
+/* ---------- persistência ---------- */
+function normalizarDatas(){
+  Object.keys(state.months).forEach(k => {
+    const m = state.months[k];
+    if (!m.data) m.data = k.length === 7 ? ultimoDia(k) : k;
+    if (k.length === 7){                       // migra chave mensal antiga -> data completa
+      const nova = m.data;
+      if (!state.months[nova]){ state.months[nova] = m; delete state.months[k]; }
+    }
+  });
+  Object.keys(state.months).forEach(k => { state.months[k].data = k; });
+}
+async function load(){
+  if (DADOS_EMBUTIDOS && DADOS_EMBUTIDOS.dados){
+    state = DADOS_EMBUTIDOS.dados;
+    atualizadoEm = DADOS_EMBUTIDOS.atualizadoEm || null;
+    modoArquivo = true;
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      temLocalStorage = true;
+      const loc = raw ? JSON.parse(raw) : null;
+      if (loc && loc.dados && loc.atualizadoEm && (!atualizadoEm || loc.atualizadoEm > atualizadoEm)){
+        state = loc.dados;                 // lançamentos feitos neste aparelho após o último download
+        atualizadoEm = loc.atualizadoEm;
+        pendente = true; persistiuLocal = true;
+        setTimeout(() => toast("Lançamentos salvos neste aparelho foram carregados — o arquivo em disco está mais antigo"), 600);
+      } else {
+        gravarLocal();                     // alinha a cópia local ao arquivo
+      }
+    }catch(e){ temLocalStorage = false; }
+    normalizarDatas();
+    return;
+  }
+  try{
+    const r = await window.storage.get(KEY);
+    if (r && r.value){
+      state = JSON.parse(r.value);
+      normalizarDatas();
+      return;
+    }
+  }catch(e){}
+  if (!window.storage) memoryOnly = true;
+  state.accounts = SEED.map(([n,c]) => ({id:uid(), name:n, cur:c}));
+  state.months = {};
+  Object.entries(SEED_MESES).forEach(([k,m]) => {
+    const vals = {};
+    state.accounts.forEach((a,i) => vals[a.id] = m.vals[i]);
+    state.months[k] = { data:m.data, fx:{...m.fx}, vals };
+  });
+  await save();
+}
+let pendente = false;
+async function save(){
+  if (modoArquivo){
+    atualizadoEm = new Date().toISOString();
+    persistiuLocal = gravarLocal();
+    pendente = true;                       // o arquivo em disco ainda não contém isto
+    renderShare();
+    return;
+  }
+  try{ await window.storage.set(KEY, JSON.stringify(state)); }
+  catch(e){ memoryOnly = true; }
+}
+
+/* ---------- painel do arquivo ---------- */
+const quando = iso => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear()+
+         " às "+String(d.getHours()).padStart(2,"0")+"h"+String(d.getMinutes()).padStart(2,"0");
+};
+function renderShare(){
+  const p = document.getElementById("sharePanel");
+  const lbl = document.getElementById("shareLbl"), det = document.getElementById("shareDet");
+  const acts = document.getElementById("shareActs"), av = document.getElementById("shareAviso");
+  acts.innerHTML = "";
+  const bt = (txt, fn, ghost) => { const b=document.createElement("button"); b.className="btn small"+(ghost?" ghost":""); b.textContent=txt; b.onclick=fn; acts.appendChild(b); return b; };
+
+  if (modoArquivo){
+    const ok = !pendente, seguro = pendente && persistiuLocal, risco = pendente && !persistiuLocal;
+    p.className = "share" + (risco ? " ro" : " on");
+    lbl.textContent = ok ? "Arquivo em dia" : seguro ? "Salvo neste aparelho" : "Alterações não gravadas";
+    det.innerHTML = "Última atualização · " + quando(atualizadoEm) +
+      (seguro ? ' · <b style="color:var(--up)">seus lançamentos ficam guardados ao sair e voltar</b>' : "") +
+      (risco ? ' · <b style="color:var(--down)">baixe o arquivo para não perder</b>' : "");
+    bt("Baixar arquivo atualizado", exportarPagina);
+    bt("Baixar para o site (index.html)", () => exportarPagina("index.html"), true);
+    if (pendente && persistiuLocal) bt("Descartar alterações locais", async () => {
+      if (!(await confirmar("Descartar os lançamentos salvos neste aparelho e voltar ao conteúdo do arquivo?"))) return;
+      try{ localStorage.removeItem(LS_KEY); }catch(e){}
+      location.reload();
+    }, true);
+    av.innerHTML = ok
+      ? "Lance à vontade: cada Salvar fica guardado neste aparelho automaticamente. O download só é necessário para enviar a alguém ou publicar no site."
+      : seguro
+        ? "Tudo certo por aqui — pode fechar e voltar que os lançamentos continuam. O arquivo em disco ainda não os contém: baixe quando for enviar ou publicar (é ele que os outros veem)."
+        : 'Este navegador não permitiu guardar dados locais. Clique em <b style="color:var(--ink)">Baixar arquivo atualizado</b> antes de sair, ou os lançamentos desta aba se perdem.';
+    return;
+  }
+  p.className = "share on";
+  lbl.textContent = "Rascunho neste dispositivo";
+  det.textContent = memoryOnly ? "Salvamento indisponível neste ambiente" : "Salvo automaticamente enquanto você trabalha";
+  bt("Baixar arquivo para usar e enviar", exportarPagina);
+  av.innerHTML = "O arquivo baixado leva os dados dentro dele, abre em qualquer navegador sem internet e pode ser enviado por WhatsApp. Quem recebe vê tudo, mas sem sincronizar de volta com este rascunho.";
+}
+function ledgerEstatico(){
+  const ks = chaves().slice().reverse();
+  let h = '<div class="scroller"><table><thead><tr><th class="mes">Lançamento</th><th>Data</th><th class="tot">Total R$</th><th>Δ R$</th><th>Δ%</th><th>CAD</th><th>USD</th>';
+  state.accounts.forEach(a => h += "<th>"+esc(a.name)+(a.cur!=="BRL"?" ("+a.cur+")":"")+"</th>");
+  h += '<th></th></tr></thead><tbody>';
+  ks.forEach((k,idx) => {
+    const t = totalDe(k), antK = ks[idx+1];
+    const d = antK ? t - totalDe(antK) : null;
+    const pv = antK ? varPct(t, totalDe(antK)) : null;
+    const fx = fxDe(k);
+    h += '<tr><td class="mes">'+rotulo(k)+'</td><td>'+dataBR(dataDe(k))+'</td><td class="tot">'+nf(t)+'</td>'+
+         '<td class="'+(d===null?"flat":cls(d))+'">'+(d===null?"—":(d>0?"+":d<0?"−":"")+nf(Math.abs(d)))+'</td>'+
+         '<td class="'+(pv===null?"flat":cls(pv))+'">'+pctTxt(pv)+'</td>'+
+         '<td class="fxtd">'+nf(fx.cad,4)+'</td><td class="fxtd">'+nf(fx.usd,4)+'</td>';
+    state.accounts.forEach(a => {
+      const vN = nativo(k,a);
+      h += "<td>"+(vN===undefined?'<span class="flat">—</span>':nf(emReais(k,a)))+"</td>";
+    });
+    h += '<td class="act"></td></tr>';
+  });
+  return h + "</tbody></table></div>";
+}
+function exportarPagina(nomeFixo){
+  const nomeSite = typeof nomeFixo === "string" ? nomeFixo : null;
+  const limpar = ["entries","accts","fxStatus","shareActs"];
+  const guardado = {};
+  limpar.forEach(id => { const el = document.getElementById(id); if (el){ guardado[id] = el.innerHTML; el.innerHTML = ""; } });
+  const lw = document.getElementById("ledgerWrap");
+  const lwOld = lw.innerHTML;
+  lw.innerHTML = ledgerEstatico();
+  const ocultas = ["secLancar","secContas"].map(id => document.getElementById(id));
+  ocultas.forEach(el => { if (el) el.style.display = "none"; });
+
+  let html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+
+  ocultas.forEach(el => { if (el) el.style.display = ""; });
+  lw.innerHTML = lwOld;
+  limpar.forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = guardado[id]; });
+
+  const carga = JSON.stringify({ dados: state, atualizadoEm: new Date().toISOString() })
+                    .replace(/</g, "\\u003c").replace(/>/g, "\\u003e");
+  const alvo = /\/\*DADOS_INICIO\*\/[\s\S]*?\/\*DADOS_FIM\*\//;
+  if (!alvo.test(html)) return toast("Não deu para gerar o arquivo");
+  html = html.replace(alvo, "/*DADOS_INICIO*/" + carga + "/*DADOS_FIM*/");
+  pendente = false;
+  if (modoArquivo) gravarLocal();
+  renderAll();
+
+  const ks = chaves();
+  const nome = nomeSite || ("livro-patrimonio-" + (ks.length ? ks[ks.length-1] : "vazio") + ".html");
+  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = nome; a.click();
+  URL.revokeObjectURL(a.href);
+  toast(nomeSite ? "index.html gerado — arraste no painel do site para publicar"
+                 : "Arquivo gerado — " + nome + " é o novo original");
+}
+
+function aplicarPermissoes(){
+  const el = document.getElementById("apagarTudo");
+  if (el) el.style.display = modoArquivo ? "none" : "";
+}
+
+/* ---------- cotação do dia ---------- */
+const FX_CACHE = "cotacao-do-dia";
+const hojeISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+let cotacaoHoje = null;
+
+function statusFx(html, cls){
+  const el = document.getElementById("fxStatus");
+  el.className = "fxstatus" + (cls ? " " + cls : "");
+  el.innerHTML = html;
+}
+function aplicarCotacao(c, silencioso, forcarCampos){
+  cotacaoHoje = c;
+  const alvo = document.getElementById("mesInput").value;
+  const jaSalvo = !!state.months[alvo];
+  if (!jaSalvo || forcarCampos){
+    document.getElementById("fxCad").value = nf(c.cad, 4);
+    document.getElementById("fxUsd").value = nf(c.usd, 4);
+    atualizarForm();
+  }
+  statusFx("Cotação de <b>" + dataBR(c.data) + "</b> · CAD <b>" + nf(c.cad,4) + "</b> · USD <b>" + nf(c.usd,4) + "</b>" +
+           (jaSalvo && !forcarCampos ? " — o lançamento em foco mantém o câmbio gravado; datas novas usam a de hoje" : "") +
+           '<br><span style="opacity:.8">' + c.fonte + " · confira e ajuste se quiser — os campos continuam seus</span>");
+  if (!silencioso) toast("Cotação de hoje aplicada");
+}
+async function lerCache(){
+  try{
+    const r = await window.storage.get(FX_CACHE);
+    if (r && r.value){ const c = JSON.parse(r.value); if (c.data === hojeISO()) return c; }
+  }catch(e){}
+  return null;
+}
+function validaFx(cad, usd){
+  return cad > 1 && cad < 15 && usd > 1 && usd < 20;
+}
+async function fetchJson(url, opts, ms){
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), ms || 6000);
+  try{
+    const r = await fetch(url, Object.assign({ signal: ctl.signal }, opts || {}));
+    if (!r.ok) throw new Error("http " + r.status);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+async function viaAwesome(){
+  const j = await fetchJson("https://economia.awesomeapi.com.br/json/last/CAD-BRL,USD-BRL");
+  const mid = o => (parseFloat(o.bid) + parseFloat(o.ask)) / 2;
+  const cad = mid(j.CADBRL), usd = mid(j.USDBRL);
+  if (!validaFx(cad, usd)) throw new Error("faixa");
+  return { cad, usd, fonte: "cotação comercial · AwesomeAPI" };
+}
+async function viaERAPI(){
+  const j = await fetchJson("https://open.er-api.com/v6/latest/USD");
+  const usd = j && j.rates && j.rates.BRL, cadX = j && j.rates && j.rates.CAD;
+  const cad = usd && cadX ? usd / cadX : 0;
+  if (!validaFx(cad, usd)) throw new Error("faixa");
+  return { cad, usd, fonte: "mid-market · Open ER-API" };
+}
+async function viaFrankfurter(){
+  const j = await fetchJson("https://api.frankfurter.dev/v1/latest?base=USD&symbols=BRL,CAD");
+  const usd = j && j.rates && j.rates.BRL, cadX = j && j.rates && j.rates.CAD;
+  const cad = usd && cadX ? usd / cadX : 0;
+  if (!validaFx(cad, usd)) throw new Error("faixa");
+  return { cad, usd, fonte: "referência BCE · Frankfurter" };
+}
+async function viaCurrencyApi(){
+  const j = await fetchJson("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json");
+  const usd = j && j.usd && j.usd.brl, cadX = j && j.usd && j.usd.cad;
+  const cad = usd && cadX ? usd / cadX : 0;
+  if (!validaFx(cad, usd)) throw new Error("faixa");
+  return { cad, usd, fonte: "mid-market · Currency-API (CDN)" };
+}
+async function viaClaude(){
+  const data = await fetchJson("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      tools: [{ type: "web_search_20250305", name: "web_search" }],
+      messages: [{
+        role: "user",
+        content: "Busque na web a cotação mid-market de hoje: quantos reais brasileiros (BRL) valem 1 dólar canadense (CAD) e quantos reais valem 1 dólar americano (USD). " +
+                 "Responda SOMENTE com um objeto JSON, sem markdown, sem crases, sem texto antes ou depois, no formato exato: " +
+                 '{"cad_brl": 3.65, "usd_brl": 5.20, "data": "AAAA-MM-DD", "fonte": "nome da fonte"}'
+      }]
+    })
+  }, 30000);
+  const txt = (data.content || []).map(b => b.type === "text" ? b.text : "").join(" ");
+  const a = txt.indexOf("{"), z = txt.lastIndexOf("}");
+  if (a < 0 || z <= a) throw new Error("sem json");
+  const j = JSON.parse(txt.slice(a, z + 1));
+  const cad = Number(j.cad_brl), usd = Number(j.usd_brl);
+  if (!validaFx(cad, usd)) throw new Error("faixa");
+  return { cad, usd, fonte: "busca web · " + (j.fonte || "Claude") };
+}
+async function buscarCotacao(forcar){
+  if (!forcar && cotacaoHoje && cotacaoHoje.data === hojeISO()){
+    aplicarCotacao(cotacaoHoje, true, false); return;
+  }
+  if (!forcar){
+    const c = await lerCache();
+    if (c){ aplicarCotacao(c, true, false); return; }
+  }
+  const fontes = [
+    ["fonte comercial", viaAwesome],
+    ["mid-market", viaERAPI],
+    ["BCE", viaFrankfurter],
+    ["CDN", viaCurrencyApi],
+    ["busca web", viaClaude],
+  ];
+  const motivos = [];
+  for (let i = 0; i < fontes.length; i++){
+    statusFx('<span class="buscando">Buscando a cotação do dia… (' + (i+1) + "/" + fontes.length + " · " + fontes[i][0] + ")</span>");
+    try{
+      const b = await fontes[i][1]();
+      const c = { cad: b.cad, usd: b.usd, data: hojeISO(), fonte: b.fonte, ts: Date.now() };
+      try{ await window.storage.set(FX_CACHE, JSON.stringify(c)); }catch(e){}
+      aplicarCotacao(c, !forcar, forcar);
+      return;
+    }catch(e){
+      const msg = (e && e.message) || "";
+      const raz = e && e.name === "AbortError" ? "demorou demais"
+                : /^http \d+/.test(msg) ? msg
+                : "bloqueada neste ambiente";
+      motivos.push(fontes[i][0] + ": " + raz);
+      console.warn("cotação: falhou " + fontes[i][0], e);
+    }
+  }
+  statusFx("Nenhuma fonte respondeu (" + motivos.join(" · ") + "). Verifique a internet e toque em <b>Buscar cotação de hoje</b>, ou digite o câmbio nos campos.", "erro");
+}
+
+/* ---------- cabeçalho ---------- */
+function snapshotForm(){
+  const vals = {};
+  document.querySelectorAll("#entries input").forEach(i => {
+    if (i.value.trim() !== "") vals[i.dataset.id] = parseNum(i.value);
+  });
+  return {
+    fx: { cad: parseNum(document.getElementById("fxCad").value) || 0,
+          usd: parseNum(document.getElementById("fxUsd").value) || 0 },
+    vals
+  };
+}
+function totalSnap(snap){
+  return state.accounts.reduce((t,a) => {
+    const v = snap.vals[a.id];
+    if (v === undefined) return t;
+    const r = a.cur === "CAD" ? snap.fx.cad : a.cur === "USD" ? snap.fx.usd : 1;
+    return t + v * r;
+  }, 0);
+}
+function formDifereDoSalvo(k, snap){
+  const m = state.months[k];
+  if (!m) return true;
+  if (Math.abs((m.fx.cad||0) - snap.fx.cad) > 0.0005) return true;
+  if (Math.abs((m.fx.usd||0) - snap.fx.usd) > 0.0005) return true;
+  const ids = new Set([...Object.keys(m.vals), ...Object.keys(snap.vals)]);
+  for (const id of ids){
+    const a = m.vals[id], b = snap.vals[id];
+    if (a === undefined || b === undefined) return true;
+    if (Math.abs(a - b) > 0.005) return true;
+  }
+  return false;
+}
+function renderPlate(){
+  const ks = chaves();
+  const el = document.getElementById("totalNow"), ref = document.getElementById("mesRef");
+  const dm = document.getElementById("deltaMes"), da = document.getElementById("deltaAcum");
+  const dan = document.getElementById("deltaAno");
+  const sp = document.getElementById("split"), ef = document.getElementById("efeitos");
+  const nota = document.getElementById("duoNota");
+  const gid = id => document.getElementById(id);
+  const MOEDAS = [
+    { cur:"USD", sim:"US$", tot:gid("totalUsd"), dm:gid("deltaMesUsd"), dan:gid("deltaAnoUsd"), da:gid("deltaAcumUsd"), cap:gid("capUsd") },
+    { cur:"CAD", sim:"C$",  tot:gid("totalCad"), dm:gid("deltaMesCad"), dan:gid("deltaAnoCad"), da:gid("deltaAcumCad"), cap:gid("capCad") }
+  ];
+  const foco = document.getElementById("mesInput").value || (ks.length ? ks[ks.length-1] : null);
+  const snap = snapshotForm();
+  const temAlgo = Object.keys(snap.vals).length > 0;
+
+  if (!foco || (!ks.length && !temAlgo)){
+    el.innerHTML = '<span class="cifra">R$</span>—'; ref.textContent = "sem lançamentos";
+    dm.className = "delta flat"; dm.textContent = "—";
+    dan.className = "delta flat"; dan.textContent = "—"; da.textContent = "";
+    MOEDAS.forEach(m => {
+      m.tot.innerHTML = '<span class="cifra">' + m.sim + '</span>—';
+      m.dm.className = "delta flat"; m.dm.textContent = "—";
+      m.dan.className = "delta flat"; m.dan.textContent = "—"; m.da.textContent = "";
+      m.cap.textContent = ""; m.tot.closest(".duo-col").classList.remove("sem-fx");
+    });
+    nota.innerHTML = "";
+    sp.innerHTML = ""; ef.innerHTML = ""; return;
+  }
+
+  const salvo = !!state.months[foco];
+  const difere = salvo ? formDifereDoSalvo(foco, snap) : true;
+  const t = totalSnap(snap);
+  el.innerHTML = '<span class="cifra">R$</span>' + nf(t);
+  /* as moedas estrangeiras espelham o formulario em foco, com o cambio digitado nele */
+  MOEDAS.forEach(m => {
+    m.fx = (m.cur === "USD" ? snap.fx.usd : snap.fx.cad) || 0;
+    m.t = m.fx > 0 ? t / m.fx : null;
+    m.tot.innerHTML = '<span class="cifra">' + m.sim + '</span>' + (m.t === null ? "—" : nf(m.t));
+    m.tot.closest(".duo-col").classList.toggle("sem-fx", m.t === null);
+    m.cap.textContent = m.t === null ? "sem câmbio" : m.sim + " 1 = R$ " + nf(m.fx,4);
+  });
+
+  let selo = "";
+  if (!salvo) selo = ' · <b class="down">prévia — ainda não gravada</b>';
+  else if (difere) selo = ' · <b class="down">editando — alterações não gravadas</b>';
+  else if (foco !== ks[ks.length-1]) selo = ' · <span class="flat">lançamento antigo</span>';
+  ref.innerHTML = rotulo(foco) + selo;
+  document.title = "Livro do patrimônio · " + rotulo(foco);
+
+  /* Uma linha de rendimento: quanto rendeu no periodo, em valor e em %.
+     O saldo atual vem do FORMULARIO (t / m.t), a base vem do que esta GRAVADO --
+     assim a previa de um lancamento ainda nao salvo ja mostra o rendimento. */
+  const linhaRend = (elm, atual, base, sim, baseK) => {
+    if (atual === null || base === null || base === undefined || !baseK){
+      elm.className = "delta flat"; elm.textContent = "—"; elm.removeAttribute("title"); return;
+    }
+    const d = atual - base;
+    elm.className = "delta " + cls(d);
+    elm.textContent = (d >= 0 ? "+" : "−") + sim + " " + nf(Math.abs(d)) + "  " + pctTxt(varPct(atual, base));
+    elm.title = "desde " + rotulo(baseK);
+  };
+
+  const bMes = baseDoPeriodo(foco, inicioMes(foco));
+  const bAno = baseDoPeriodo(foco, inicioAno(foco));
+
+  linhaRend(dm,  t, bMes ? totalDe(bMes) : null, "R$", bMes);
+  linhaRend(dan, t, bAno ? totalDe(bAno) : null, "R$", bAno);
+  MOEDAS.forEach(m => {
+    linhaRend(m.dm,  m.t, bMes ? totalEmMoeda(bMes, m.cur) : null, m.sim, bMes);
+    linhaRend(m.dan, m.t, bAno ? totalEmMoeda(bAno, m.cur) : null, m.sim, bAno);
+  });
+
+  /* "Acumulado desde o inicio do livro" so aparece quando diz algo que o "no ano"
+     ainda nao disse -- ou seja, quando o livro comecou num ano anterior. */
+  const k0 = ks.length ? ks[0] : null;
+  const mostraAcum = k0 && bAno && k0 !== bAno && k0 < foco;
+  da.textContent = mostraAcum ? "acumulado desde " + rotulo(k0) + ": R$ " + pctTxt(varPct(t, totalDe(k0))) : "";
+  MOEDAS.forEach(m => {
+    const b = mostraAcum ? totalEmMoeda(k0, m.cur) : null;
+    m.da.textContent = (b !== null && m.t !== null) ? m.sim + " " + pctTxt(varPct(m.t, b)) : "";
+  });
+  if (!bMes && !bAno)
+    da.textContent = salvo ? "primeiro lançamento do livro" : "anterior a todos os lançamentos";
+
+  /* Tres percentuais diferentes para o mesmo dinheiro parecem erro de conta.
+     A causa e' sempre o cambio, entao a pagina diz qual foi o movimento. */
+  const ppMes = bMes ? varPct(t, totalDe(bMes)) : null;
+  const divergentes = [];
+  if (bMes) MOEDAS.forEach(m => {
+    const baseM = totalEmMoeda(bMes, m.cur);
+    if (m.t === null || baseM === null) return;
+    const ppM = varPct(m.t, baseM), pfx = varPct(m.fx, taxa(bMes, m.cur));
+    if (ppMes !== null && ppM !== null && pfx !== null && Math.abs(ppM - ppMes) >= 0.05)
+      divergentes.push((m.cur === "USD" ? "dólar" : "canadense") + " <b>" + pctTxt(pfx) + "</b>");
+  });
+  nota.innerHTML = divergentes.length
+    ? "Câmbio desde " + rotulo(bMes) + ": " + divergentes.join(", ") +
+      ". É o que separa as três leituras."
+    : "";
+
+  const brlTot = state.accounts.filter(a=>a.cur==="BRL").reduce((x,a)=>x+(snap.vals[a.id]||0),0);
+  const cad = state.accounts.filter(a=>a.cur==="CAD").reduce((x,a)=>x+(snap.vals[a.id]||0),0);
+  const usd = state.accounts.filter(a=>a.cur==="USD").reduce((x,a)=>x+(snap.vals[a.id]||0),0);
+  sp.innerHTML =
+    "<span>R$ " + nf(brlTot) + " em reais</span>" +
+    "<span>C$ " + nf(cad) + " × " + nf(snap.fx.cad,4) + " = " + brl(cad*snap.fx.cad) + "</span>" +
+    "<span>US$ " + nf(usd) + " × " + nf(snap.fx.usd,4) + " = " + brl(usd*snap.fx.usd) + "</span>";
+
+  /* A decomposicao usa a MESMA base do "no mes" logo acima, de propósito:
+     assim Δ por saldo + Δ por câmbio fecha exatamente com o rendimento do mês. */
+  if (bMes){
+    let efS = 0, efC = 0;
+    state.accounts.forEach(a => {
+      const v0 = nativo(bMes,a) || 0, v1 = snap.vals[a.id] || 0;
+      const f1 = a.cur === "CAD" ? snap.fx.cad : a.cur === "USD" ? snap.fx.usd : 1;
+      efS += (v1 - v0) * taxa(bMes, a.cur);
+      efC += v1 * (f1 - taxa(bMes, a.cur));
+    });
+    const f = v => (v >= 0 ? "+" : "−") + "R$ " + nf(Math.abs(v));
+    ef.innerHTML = '<span>Δ por saldo: <b class="'+cls(efS)+'">'+f(efS)+'</b></span>' +
+                   '<span>Δ por câmbio: <b class="'+cls(efC)+'">'+f(efC)+'</b></span>';
+  } else ef.innerHTML = "";
+}
+
+/* ---------- formulário ---------- */
+function mesBase(){
+  const alvo = document.getElementById("mesInput").value;
+  if (state.months[alvo]) return alvo;
+  const ks = chaves().filter(k => !alvo || k < alvo);
+  return ks.length ? ks[ks.length-1] : null;
+}
+function mesAnterior(){
+  const alvo = document.getElementById("mesInput").value;
+  const ks = chaves().filter(k => k < alvo);
+  return ks.length ? ks[ks.length-1] : null;
+}
+function renderForm(){
+  const box = document.getElementById("entries");
+  const alvo = document.getElementById("mesInput").value;
+  const base = mesBase();
+  const vals = base ? state.months[base].vals : {};
+  let fx = base ? fxDe(base) : FX_PADRAO;
+  if (!state.months[alvo] && cotacaoHoje) fx = { cad: cotacaoHoje.cad, usd: cotacaoHoje.usd };
+  document.getElementById("fxCad").value = nf(fx.cad,4);
+  document.getElementById("fxUsd").value = nf(fx.usd,4);
+
+  box.innerHTML = "";
+  state.accounts.forEach(a => {
+    const row = document.createElement("div");
+    row.className = "erow";
+    const v = vals[a.id];
+    row.innerHTML = '<span class="nm"></span>' +
+      '<input type="text" inputmode="decimal" data-id="'+a.id+'" data-cur="'+a.cur+'" value="'+(v!==undefined? nf(v) : "")+'" placeholder="0,00" aria-label="Saldo em '+a.cur+'">' +
+      '<span class="prev"></span>';
+    const nm = row.querySelector(".nm");
+    nm.textContent = a.name;
+    if (a.cur !== "BRL"){ const b = document.createElement("em"); b.className="cur"; b.textContent=a.cur; nm.appendChild(b); }
+    box.appendChild(row);
+  });
+  box.querySelectorAll("input").forEach(i => i.addEventListener("input", atualizarForm));
+  document.getElementById("formHint").textContent =
+    state.months[alvo] ? "editando o lançamento de " + rotulo(alvo) : (chaves().length ? "campos vindos do lançamento anterior — mude só o que mudou" : "");
+  atualizarForm();
+}
+function atualizarForm(){
+  const antK = mesAnterior();
+  const fc = parseNum(document.getElementById("fxCad").value) || 0;
+  const fu = parseNum(document.getElementById("fxUsd").value) || 0;
+
+  if (antK){
+    const f0 = fxDe(antK);
+    const pc = varPct(fc, f0.cad), pu = varPct(fu, f0.usd);
+    document.getElementById("hintCad").innerHTML = rotulo(antK) + ": " + nf(f0.cad,4) + '  <span class="'+(pc===null?"flat":cls(pc))+'">'+pctTxt(pc)+"</span>";
+    document.getElementById("hintUsd").innerHTML = rotulo(antK) + ": " + nf(f0.usd,4) + '  <span class="'+(pu===null?"flat":cls(pu))+'">'+pctTxt(pu)+"</span>";
+  } else {
+    document.getElementById("hintCad").textContent = "";
+    document.getElementById("hintUsd").textContent = "";
+  }
+
+  let t = 0;
+  document.querySelectorAll("#entries input").forEach(i => {
+    const cur = i.dataset.cur, v = parseNum(i.value);
+    const r = cur === "CAD" ? fc : cur === "USD" ? fu : 1;
+    t += v * r;
+    const prev = i.closest(".erow").querySelector(".prev");
+    const a = state.accounts.find(x => x.id === i.dataset.id);
+    const partes = [];
+    if (antK && nativo(antK,a) !== undefined) partes.push(rotulo(antK) + ": " + fmtCur(nativo(antK,a), a.cur));
+    if (cur !== "BRL") partes.push('<span class="conv">= ' + brl(v*r) + "</span>");
+    prev.innerHTML = partes.join(" · ");
+  });
+  document.getElementById("formTotal").textContent = brl(t);
+  renderPlate();
+}
+
+/* ---------- gráfico ---------- */
+function renderChart(){
+  const wrap = document.getElementById("chartWrap");
+  const ks = chaves();
+  document.getElementById("chartHint").textContent = ks.length ? ks.length + (ks.length===1?" mês":" meses") : "";
+  if (ks.length < 2){
+    wrap.innerHTML = '<div class="empty"><strong>Ainda sem linha para desenhar</strong>Lance um segundo mês e a curva aparece aqui.</div>';
+    return;
+  }
+  const vals = ks.map(totalDe);
+  const W=720,H=260,ML=8,MR=8,MT=18,MB=30;
+  const min=Math.min(...vals), max=Math.max(...vals);
+  const pad=(max-min)*.18 || Math.max(max*.05,1);
+  const lo=Math.max(0,min-pad), hi=max+pad;
+  const x=i=>ML+(W-ML-MR)*(ks.length===1?.5:i/(ks.length-1));
+  const y=v=>MT+(H-MT-MB)*(1-(v-lo)/((hi-lo)||1));
+  const pts=vals.map((v,i)=>x(i).toFixed(1)+","+y(v).toFixed(1));
+  const area="M"+x(0).toFixed(1)+","+(H-MB)+" L"+pts.join(" L")+" L"+x(ks.length-1).toFixed(1)+","+(H-MB)+" Z";
+  let grid="";
+  for(let g=0;g<=3;g++){
+    const v=lo+(hi-lo)*g/3, yy=y(v);
+    grid+='<line x1="'+ML+'" x2="'+(W-MR)+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="var(--rule-soft)" stroke-width="1"/>'+
+          '<text x="'+(ML+2)+'" y="'+(yy-5).toFixed(1)+'" font-size="10" fill="var(--ink-soft)" font-family="IBM Plex Mono, monospace">'+brlShort(v)+'</text>';
+  }
+  const passo=Math.ceil(ks.length/6); let xlab="";
+  ks.forEach((k,i)=>{ if(i%passo===0||i===ks.length-1)
+    xlab+='<text x="'+x(i).toFixed(1)+'" y="'+(H-10)+'" font-size="10" fill="var(--ink-soft)" text-anchor="middle" font-family="IBM Plex Mono, monospace">'+rotulo(k)+'</text>';});
+  const iSel = selecionado ? ks.indexOf(selecionado) : -1;
+  const dots=vals.map((v,i)=>'<circle cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="'+(i===iSel?4.6:i===vals.length-1?4:2.6)+'" fill="'+(i===iSel?'var(--seal)':'var(--up)')+'"><title>'+rotulo(ks[i])+" — "+brl(v)+'</title></circle>').join("");
+  wrap.innerHTML='<div class="chart-box"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolução do total em reais">'+
+    grid+'<path d="'+area+'" fill="var(--up)" opacity=".08"/>'+
+    '<polyline points="'+pts.join(" ")+'" fill="none" stroke="var(--up)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+
+    dots+xlab+'</svg></div>';
+}
+
+/* ---------- variação por conta ---------- */
+function renderVar(){
+  const wrap = document.getElementById("varWrap"), hint = document.getElementById("varHint");
+  const ks = chaves();
+  if (!ks.length){ wrap.innerHTML = '<div class="empty"><strong>Nada a comparar ainda</strong>Salve o primeiro mês para começar.</div>'; hint.textContent=""; return; }
+  const foco = document.getElementById("mesInput").value;
+  const ateFoco = foco ? ks.filter(k => k <= foco) : ks;
+  const ult = (selecionado && state.months[selecionado]) ? selecionado
+            : (ateFoco.length ? ateFoco[ateFoco.length-1] : ks[ks.length-1]);
+  const iSel = ks.indexOf(ult);
+  const ant = iSel > 0 ? ks[iSel-1] : null, prim = ks[0];
+  hint.textContent = ant ? rotulo(ult) + " vs " + rotulo(ant) : rotulo(ult);
+
+  let h = '<div class="scroller"><table><thead><tr>'+
+    '<th class="mes">Conta</th><th>Saldo</th><th class="tot">Em R$</th>'+
+    '<th>Δ% na moeda</th><th>Δ% em R$</th><th>Δ% acum. R$</th></tr></thead><tbody>';
+  state.accounts.forEach(a => {
+    const vN = nativo(ult,a), vR = emReais(ult,a);
+    const pMoeda = ant ? varPct(vN||0, nativo(ant,a)) : null;
+    const pReais = ant ? varPct(vR, emReais(ant,a)) : null;
+    const pAcum  = iSel > 0 ? varPct(vR, emReais(prim,a)) : null;
+    h += '<tr><td class="mes">'+esc(a.name)+(a.cur!=="BRL"?' <em class="cur">'+a.cur+'</em>':'')+'</td>'+
+         '<td>'+(vN===undefined?'<span class="flat">—</span>':fmtCur(vN,a.cur))+'</td>'+
+         '<td class="tot">'+nf(vR)+'</td>'+
+         '<td class="'+(pMoeda===null?"flat":cls(pMoeda))+'">'+(a.cur==="BRL"&&pMoeda!==null?'<span class="flat">=</span>':pctTxt(pMoeda))+'</td>'+
+         '<td class="'+(pReais===null?"flat":cls(pReais))+'">'+pctTxt(pReais)+'</td>'+
+         '<td class="'+(pAcum===null?"flat":cls(pAcum))+'">'+pctTxt(pAcum)+'</td></tr>';
+  });
+  const tU = totalDe(ult), pT = ant ? varPct(tU, totalDe(ant)) : null, pAc = iSel > 0 ? varPct(tU, totalDe(prim)) : null;
+  h += '<tr class="tot-row"><td class="mes">TOTAL</td><td></td><td class="tot">'+nf(tU)+'</td><td></td>'+
+       '<td class="'+(pT===null?"flat":cls(pT))+'">'+pctTxt(pT)+'</td>'+
+       '<td class="'+(pAc===null?"flat":cls(pAc))+'">'+pctTxt(pAc)+'</td></tr>';
+  if (ant){
+    const f1=fxDe(ult), f0=fxDe(ant);
+    const pc=varPct(f1.cad,f0.cad), pu=varPct(f1.usd,f0.usd);
+    h += '<tr><td class="mes flat">Câmbio CAD</td><td>'+nf(f1.cad,4)+'</td><td class="tot flat">—</td><td></td><td class="'+(pc===null?"flat":cls(pc))+'">'+pctTxt(pc)+'</td><td></td></tr>'+
+         '<tr><td class="mes flat">Câmbio USD</td><td>'+nf(f1.usd,4)+'</td><td class="tot flat">—</td><td></td><td class="'+(pu===null?"flat":cls(pu))+'">'+pctTxt(pu)+'</td><td></td></tr>';
+  }
+  wrap.innerHTML = h + "</tbody></table></div>";
+}
+
+/* ---------- livro razão ---------- */
+function renderLedger(){
+  const wrap = document.getElementById("ledgerWrap");
+  const ks = chaves().slice().reverse();
+  if (!ks.length){ wrap.innerHTML = '<div class="empty"><strong>O livro está em branco</strong>Preencha os saldos acima e clique em Salvar lançamento.</div>'; return; }
+  let h = '<div class="scroller"><table><thead><tr><th class="mes">Lançamento</th><th>Data ✎</th><th class="tot">Total R$</th><th>Δ R$</th><th>Δ%</th><th>CAD ✎</th><th>USD ✎</th>';
+  state.accounts.forEach(a => h += "<th>"+esc(a.name)+(a.cur!=="BRL"?" ("+a.cur+")":"")+"</th>");
+  h += '<th></th></tr></thead><tbody>';
+  ks.forEach((k,idx) => {
+    const t = totalDe(k), antK = ks[idx+1];
+    const d = antK ? t - totalDe(antK) : null;
+    const p = antK ? varPct(t, totalDe(antK)) : null;
+    const fx = fxDe(k);
+    h += '<tr data-k="'+k+'"'+(k===selecionado?' class="sel"':'')+'><td class="mes">'+rotulo(k)+'</td>'+
+         '<td><input class="datainline" type="date" value="'+dataDe(k)+'" data-dk="'+k+'" aria-label="Data do lançamento"></td>'+
+         '<td class="tot">'+nf(t)+'</td>'+
+         '<td class="'+(d===null?"flat":cls(d))+'">'+(d===null?"—":(d>0?"+":d<0?"−":"")+nf(Math.abs(d)))+'</td>'+
+         '<td class="'+(p===null?"flat":cls(p))+'">'+pctTxt(p)+'</td>'+
+         '<td class="fxtd"><input class="fxinline" inputmode="decimal" value="'+nf(fx.cad,4)+'" data-k="'+k+'" data-m="cad" aria-label="Câmbio CAD de '+rotulo(k)+'"></td>'+
+         '<td class="fxtd"><input class="fxinline" inputmode="decimal" value="'+nf(fx.usd,4)+'" data-k="'+k+'" data-m="usd" aria-label="Câmbio USD de '+rotulo(k)+'"></td>';
+    state.accounts.forEach(a => {
+      const vN = nativo(k,a);
+      let cel;
+      if (vN === undefined) cel = '<span class="flat">—</span>';
+      else if (modo === "orig") cel = fmtCur(vN, a.cur);
+      else if (modo === "brl") cel = nf(emReais(k,a));
+      else { const pv = antK ? varPct(emReais(k,a), emReais(antK,a)) : null;
+             cel = '<span class="'+(pv===null?"flat":cls(pv))+'">'+pctTxt(pv)+'</span>'; }
+      h += "<td>"+cel+"</td>";
+    });
+    h += '<td class="act"><button class="lnk" data-edit="'+k+'">editar</button><button class="lnk rm" data-del="'+k+'">excluir</button></td></tr>';
+  });
+  wrap.innerHTML = h + "</tbody></table></div>";
+
+  wrap.querySelectorAll("input.fxinline").forEach(i => i.onchange = async () => {
+    const v = parseNum(i.value);
+    if (v <= 0){ i.value = nf(fxDe(i.dataset.k)[i.dataset.m],4); return toast("O câmbio precisa ser maior que zero"); }
+    state.months[i.dataset.k].fx[i.dataset.m] = v;
+    await save(); renderAll();
+    toast("Câmbio de " + rotulo(i.dataset.k) + " atualizado");
+  });
+  wrap.querySelectorAll("input.datainline").forEach(i => i.onchange = async () => {
+    const antiga = i.dataset.dk, nova = i.value;
+    if (!nova || nova === antiga) return;
+    if (state.months[nova]){ i.value = antiga; return toast("Já existe um lançamento em " + rotulo(nova)); }
+    state.months[nova] = state.months[antiga];
+    state.months[nova].data = nova;
+    delete state.months[antiga];
+    if (selecionado === antiga) selecionado = nova;
+    await save(); renderAll();
+    toast("Lançamento movido para " + rotulo(nova));
+  });
+  wrap.querySelectorAll("tbody tr[data-k]").forEach(tr => tr.addEventListener("click", e => {
+    if (e.target.closest("input,button")) return;
+    selecionado = tr.dataset.k;
+    document.getElementById("mesInput").value = selecionado;
+    renderAll();
+  }));
+  wrap.querySelectorAll("[data-edit]").forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    selecionado = b.dataset.edit;
+    document.getElementById("mesInput").value = b.dataset.edit;
+    renderAll();
+    document.getElementById("entries").scrollIntoView({behavior:"smooth",block:"center"});
+  });
+  wrap.querySelectorAll("[data-del]").forEach(b => b.onclick = async e => {
+    e.stopPropagation();
+    if (!(await confirmar("Excluir o lançamento de " + rotulo(b.dataset.del) + "?"))) return;
+    delete state.months[b.dataset.del];
+    if (selecionado === b.dataset.del) selecionado = null;
+    await save(); renderAll(); toast("Lançamento excluído");
+  });
+}
+
+/* ---------- contas ---------- */
+function renderAccts(){
+  const box = document.getElementById("accts");
+  box.innerHTML = "";
+  state.accounts.forEach(a => {
+    const row = document.createElement("div"); row.className = "acct";
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.value = a.name; inp.setAttribute("aria-label","Nome da conta");
+    inp.onchange = async () => { a.name = inp.value.trim() || "Conta sem nome"; await save(); renderAll(); };
+    const sel = document.createElement("select");
+    sel.setAttribute("aria-label","Moeda da conta");
+    ["BRL","CAD","USD"].forEach(c => { const o=document.createElement("option"); o.value=c; o.textContent=c; sel.appendChild(o); });
+    sel.value = a.cur;
+    sel.onchange = async () => { a.cur = sel.value; await save(); renderAll(); };
+    const rm = document.createElement("button");
+    rm.className = "btn ghost small danger"; rm.textContent = "Remover";
+    rm.onclick = async () => {
+      if (!(await confirmar("Remover “"+a.name+"” e todos os seus saldos?"))) return;
+      state.accounts = state.accounts.filter(x => x.id !== a.id);
+      Object.values(state.months).forEach(m => delete m.vals[a.id]);
+      await save(); renderAll(); toast("Conta removida");
+    };
+    row.append(inp, sel, rm);
+    box.appendChild(row);
+  });
+}
+
+function renderBaseSel(){
+  const sel = document.getElementById("baseSel");
+  sel.innerHTML = '<option value="">— escolher —</option>';
+  chaves().slice().reverse().forEach(k => {
+    const o = document.createElement("option");
+    o.value = k; o.textContent = rotulo(k);
+    sel.appendChild(o);
+  });
+  const foco = document.getElementById("mesInput").value;
+  sel.value = state.months[foco] ? foco : "";
+}
+
+function renderAll(){
+  renderShare();
+  renderBaseSel(); renderForm(); renderAccts();   // renderForm -> atualizarForm -> renderPlate
+  renderChart(); renderVar(); renderLedger();
+  aplicarPermissoes();
+}
+
+/* ---------- ações ---------- */
+document.getElementById("salvar").onclick = async () => {
+  const k = document.getElementById("mesInput").value;
+  if (!k) return toast("Escolha a data do lançamento");
+  const fc = parseNum(document.getElementById("fxCad").value);
+  const fu = parseNum(document.getElementById("fxUsd").value);
+  const temEstrangeira = state.accounts.some(a => a.cur !== "BRL");
+  if (temEstrangeira && (fc <= 0 || fu <= 0)) return toast("Preencha os dois câmbios do mês");
+  const vals = {};
+  document.querySelectorAll("#entries input").forEach(i => { if (i.value.trim() !== "") vals[i.dataset.id] = parseNum(i.value); });
+  if (!Object.keys(vals).length) return toast("Preencha ao menos uma conta");
+  state.months[k] = {
+    data: k,
+    fx: { cad: fc || FX_PADRAO.cad, usd: fu || FX_PADRAO.usd },
+    vals
+  };
+  selecionado = k;
+  await save(); renderAll();
+  toast(rotulo(k) + " salvo · " + brl(totalDe(k)) +
+    (modoArquivo ? (persistiuLocal ? " — guardado neste aparelho" : " — baixe o arquivo para não perder")
+                 : (memoryOnly ? " (não persistido)" : "")));
+};
+document.getElementById("limpar").onclick = () => {
+  document.querySelectorAll("#entries input").forEach(i => i.value = "");
+  atualizarForm();
+};
+document.getElementById("buscarFx").onclick = () => buscarCotacao(true);
+document.getElementById("autoFx").onchange = async e => {
+  state.autoFx = e.target.checked;
+  await save();
+  if (state.autoFx) buscarCotacao(false);
+};
+document.getElementById("fxCad").addEventListener("input", atualizarForm);
+document.getElementById("fxUsd").addEventListener("input", atualizarForm);
+document.getElementById("addAcct").onclick = async () => {
+  state.accounts.push({id:uid(), name:"Nova conta", cur:"BRL"});
+  await save(); renderAll();
+  const ins = document.querySelectorAll("#accts input");
+  ins[ins.length-1].focus(); ins[ins.length-1].select();
+};
+document.getElementById("apagarTudo").onclick = async () => {
+  if (!(await confirmar("Descartar tudo e voltar aos dois lançamentos iniciais (01/07 e 03/08)? Não dá para desfazer."))) return;
+  state.accounts = SEED.map(([n,c])=>({id:uid(),name:n,cur:c}));
+  state.months = {};
+  Object.entries(SEED_MESES).forEach(([k,m]) => {
+    const vals = {};
+    state.accounts.forEach((a,i) => vals[a.id] = m.vals[i]);
+    state.months[k] = { data:m.data, fx:{...m.fx}, vals };
+  });
+  await save(); renderAll(); toast("Voltou ao estado inicial");
+};
+document.getElementById("csv").onclick = () => {
+  const ks = chaves();
+  if (!ks.length) return toast("Nada para exportar ainda");
+  const cab = ["Lancamento","Data","Total_BRL","FX_CAD","FX_USD"];
+  state.accounts.forEach(a => cab.push(a.name+" ("+a.cur+")", a.name+" (BRL)"));
+  const linhas = [cab.join(";")];
+  ks.forEach(k => {
+    const fx = fxDe(k);
+    const l = [k, dataBR(dataDe(k)), totalDe(k).toFixed(2), fx.cad, fx.usd];
+    state.accounts.forEach(a => {
+      const v = nativo(k,a);
+      l.push(v===undefined?"":v.toFixed(2), v===undefined?"":emReais(k,a).toFixed(2));
+    });
+    linhas.push(l.map(x => String(x).replace(".",",")).join(";"));
+  });
+  const blob = new Blob(["\uFEFF"+linhas.join("\n")], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "patrimonio-mensal.csv"; a.click();
+  URL.revokeObjectURL(a.href); toast("CSV baixado");
+};
+document.getElementById("modo").onclick = e => {
+  const b = e.target.closest("[data-modo]"); if (!b) return;
+  modo = b.dataset.modo;
+  document.querySelectorAll("#modo button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  renderLedger();
+};
+document.getElementById("olho").onclick = e => {
+  const on = document.body.classList.toggle("privado");
+  e.currentTarget.setAttribute("aria-pressed", String(on));
+  e.currentTarget.textContent = on ? "mostrar valores" : "ocultar valores";
+};
+window.addEventListener("beforeunload", e => {
+  if (modoArquivo && pendente && !persistiuLocal){ e.preventDefault(); e.returnValue = ""; }
+});
+const aoMudarData = () => {
+  const v = document.getElementById("mesInput").value;
+  if (v && state.months[v]) selecionado = v;
+  renderAll();
+};
+document.getElementById("mesInput").onchange = aoMudarData;
+document.getElementById("mesInput").addEventListener("input", aoMudarData);
+document.getElementById("baseSel").onchange = () => {
+  const k = document.getElementById("baseSel").value;
+  if (!k || !state.months[k]) return;
+  selecionado = k;
+  document.getElementById("mesInput").value = k;
+  renderAll();
+};
+
+(async () => {
+  await load();
+  const hoje = new Date();
+  const ks0 = chaves();
+  selecionado = ks0.length ? ks0[ks0.length-1] : null;
+  document.getElementById("mesInput").value = selecionado || hojeISO();
+  if (state.autoFx === undefined) state.autoFx = true;
+  document.getElementById("autoFx").checked = state.autoFx;
+  renderAll();
+  if (memoryOnly) toast("Salvamento indisponível aqui — os dados somem ao fechar");
+  if (state.autoFx) buscarCotacao(false);
+  else statusFx("Busca automática desligada — use o botão quando quiser.");
+})();
+</script>
+
+
+</body></html>
